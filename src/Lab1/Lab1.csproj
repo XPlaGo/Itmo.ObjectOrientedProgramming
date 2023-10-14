@@ -4,10 +4,4 @@
         <RootNamespace>Itmo.ObjectOrientedProgramming.Lab1</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\Result\PathResult\" />
-    </ItemGroup>
-
-
-
 </Project>

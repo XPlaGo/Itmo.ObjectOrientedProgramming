@@ -37,7 +37,7 @@ dotnet_diagnostic.SA1101.severity = none
 # SA1600: Elements should be documented
 dotnet_diagnostic.SA1600.severity = none
 
-# SA1602: Enumeration elements should be documented
+# SA1602: Enumeration elements should be documented 
 dotnet_diagnostic.SA1602.severity = none
 
 # SA1516: Elements should be separated by blank line
