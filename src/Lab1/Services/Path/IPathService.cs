@@ -10,5 +10,5 @@ public interface IPathService
 {
     SpaceshipResultResponse Fly(ISpaceship spaceship, IPath path);
 
-    OptimalSpaceshipResult GetOptimal(IList<ISpaceship> spaceships, IPath path);
+    OptimalSpaceshipResult GetOptimal(IReadOnlyCollection<ISpaceship> spaceships, IPath path);
 }

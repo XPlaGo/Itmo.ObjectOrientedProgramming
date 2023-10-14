@@ -1,6 +1,6 @@
 ﻿using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
-using Itmo.ObjectOrientedProgramming.Lab1.Models.Armor;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.ArmorProtectionResult;
 using Itmo.ObjectOrientedProgramming.Lab1.Services.Impediment;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Armor;
@@ -35,13 +35,13 @@ public class ArmorDispatcherFactory
 
         if (armor.ArmorPoints > damage)
         {
-            armor.ArmorPoints -= damage;
-            impediment.DamagePoints = 0;
+            armor.DecreaseArmorPoints(damage);
+            impediment.DecreasePoints(impediment.DamagePoints);
             return ArmorProtectionResult.Withstood;
         }
 
-        impediment.DamagePoints = 0;
-        armor.ArmorPoints = 0;
+        impediment.DecreasePoints(impediment.DamagePoints);
+        armor.DecreaseArmorPoints(armor.ArmorPoints);
         return ArmorProtectionResult.Destroyed;
     }
 
@@ -49,8 +49,8 @@ public class ArmorDispatcherFactory
     {
         if (impediment.DamagePoints == 0) return ArmorProtectionResult.Withstood;
 
-        armor.ArmorPoints = 0;
-        impediment.DamagePoints = 0;
+        armor.DecreaseArmorPoints(armor.ArmorPoints);
+        impediment.DecreasePoints(impediment.DamagePoints);
         return ArmorProtectionResult.Destroyed;
     }
 
@@ -58,8 +58,8 @@ public class ArmorDispatcherFactory
     {
         if (impediment.DamagePoints == 0) return ArmorProtectionResult.Withstood;
 
-        armor.ArmorPoints = 0;
-        impediment.DamagePoints = 0;
+        armor.DecreaseArmorPoints(armor.ArmorPoints);
+        impediment.DecreasePoints(impediment.DamagePoints);
         return ArmorProtectionResult.LossOfCrew;
     }
 

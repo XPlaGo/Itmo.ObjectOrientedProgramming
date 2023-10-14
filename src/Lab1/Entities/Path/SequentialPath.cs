@@ -6,19 +6,19 @@ using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Path;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
 
-public class Path : IPath
+public class SequentialPath : IPath
 {
-    public Path(IList<IEnvironment> environments)
+    public SequentialPath(IReadOnlyCollection<IEnvironment> environments)
     {
         Environments = environments;
     }
 
-    public Path(params IEnvironment[] environments)
+    public SequentialPath(params IEnvironment[] environments)
     {
         Environments = environments.ToList();
     }
 
-    public IList<IEnvironment> Environments { get; }
+    public IReadOnlyCollection<IEnvironment> Environments { get; }
     public T AcceptPathVisitor<T>(IPathVisitor<T> visitor)
     {
         ArgumentNullException.ThrowIfNull(visitor);
@@ -27,6 +27,6 @@ public class Path : IPath
 
     public object Clone()
     {
-        return new Path(Environments.Select(e => (IEnvironment)e.Clone()).ToList());
+        return new SequentialPath(Environments.Select(e => (IEnvironment)e.Clone()).ToList());
     }
 }

@@ -9,17 +9,22 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Emitters;
 
 public class EmitterDispatcher<TProtectionResult> : IEmitterVisitor<IImpedimentVisitor<TProtectionResult>>
 {
-    private readonly EmitterProtectionBuilder<TProtectionResult, AntiNeutrinoEmitter> _antiNeutrinoEmitterBuilder;
-
     public EmitterDispatcher(Func<IEmitter, IImpediment, TProtectionResult> protect)
     {
-        _antiNeutrinoEmitterBuilder = new EmitterProtectionBuilder<TProtectionResult, AntiNeutrinoEmitter>(this, protect);
+        UseAntiNeutrinoEmitter = new EmitterProtectionBuilder<TProtectionResult, AntiNeutrinoEmitter>(this, protect);
+        UseNoneEmitter = new EmitterProtectionBuilder<TProtectionResult, NoneEmitter>(this, protect);
     }
 
-    public IEmitterProtectionBuilder<TProtectionResult, AntiNeutrinoEmitter> UseAntiNeutrinoEmitter => _antiNeutrinoEmitterBuilder;
+    public EmitterProtectionBuilder<TProtectionResult, AntiNeutrinoEmitter> UseAntiNeutrinoEmitter { get; }
+    public EmitterProtectionBuilder<TProtectionResult, NoneEmitter> UseNoneEmitter { get; }
 
     public IImpedimentVisitor<TProtectionResult> Visit(AntiNeutrinoEmitter emitter)
     {
-        return _antiNeutrinoEmitterBuilder.Emitter(emitter);
+        return UseAntiNeutrinoEmitter.Emitter(emitter);
+    }
+
+    public IImpedimentVisitor<TProtectionResult> Visit(NoneEmitter emitter)
+    {
+        return UseNoneEmitter.Emitter(emitter);
     }
 }

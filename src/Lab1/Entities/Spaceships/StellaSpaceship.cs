@@ -1,7 +1,7 @@
 ﻿using System;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.ImpulseEngine;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.JumpEngine;
-using Itmo.ObjectOrientedProgramming.Lab1.Models.Armor;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Deflectors;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Emitters;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Spaceship.OnPath;
@@ -11,6 +11,9 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
 public class StellaSpaceship : Spaceship
 {
+    private const double VaclasSpaceshipOverallCharacteristics = 300;
+    private const double VaclasSpaceshipDeflectorPoints = 300;
+
     public StellaSpaceship(float impulseEngineInitialFuelLevel, float jumpEngineInitialFuelLevel)
     {
         ImpulseEngine = new CImpulseEngine(impulseEngineInitialFuelLevel);
@@ -19,9 +22,9 @@ public class StellaSpaceship : Spaceship
 
     public override ImpulseEngine ImpulseEngine { get; }
     public override JumpEngine JumpEngine { get; }
-    public override IEmitter? Emitter { get; }
-    public override IDeflector Deflector { get; } = new FirstClassDeflector(300);
-    public override IArmor Armor { get; } = new FirstArmorClass(100);
+    public override IEmitter Emitter { get; } = new NoneEmitter();
+    public override IDeflector Deflector { get; } = new FirstClassDeflector(VaclasSpaceshipDeflectorPoints);
+    public override IArmor Armor { get; } = new FirstArmorClass(VaclasSpaceshipOverallCharacteristics);
 
     public override T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
     {

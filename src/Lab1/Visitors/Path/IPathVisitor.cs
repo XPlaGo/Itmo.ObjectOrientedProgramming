@@ -1,6 +1,8 @@
-﻿namespace Itmo.ObjectOrientedProgramming.Lab1.Visitors.Path;
+﻿using Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
+
+namespace Itmo.ObjectOrientedProgramming.Lab1.Visitors.Path;
 
 public interface IPathVisitor<out T>
 {
-    T Visit(Entities.Path.Path path);
+    T Visit(SequentialPath sequentialPath);
 }

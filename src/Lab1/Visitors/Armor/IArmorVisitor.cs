@@ -1,5 +1,4 @@
-﻿using Itmo.ObjectOrientedProgramming.Lab1.Models.Armor;
-using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
+﻿using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Visitors.Armor;
 

@@ -2,6 +2,7 @@
 
 public enum DeflectorProtectionResult
 {
+    None,
     Destroyed,
     HadNoEffect,
     Withstood,

@@ -7,9 +7,11 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Environments;
 
 public interface IEnvironment : ICloneable
 {
-    public IList<IImpediment> Impediments { get; }
+    public IReadOnlyCollection<IImpediment> Impediments { get; }
 
-    public double Length { get; set; }
+    public double Length { get; }
+
+    public double DecreaseLength(double value);
 
     public T AcceptEnvironmentVisitor<T>(IEnvironmentVisitor<T> visitor);
 }

@@ -26,20 +26,30 @@ public class DeflectorDispatcherFactory
                 .Confirm()
             .UsePhotonDeflector
                 .FromAntimatterFlares(Protect)
+                .Confirm()
+            .UseNoneDeflector
+                .FromMeteorites(ProtectNone)
+                .FromAntimatterFlares(ProtectNone)
+                .FromCosmoWhales(ProtectNone)
                 .Confirm();
+    }
+
+    private DeflectorProtectionResult ProtectNone(NoneDeflector deflector, IImpediment impediment)
+    {
+        return DeflectorProtectionResult.None;
     }
 
     private DeflectorProtectionResult Protect(IDeflector deflector, IImpediment impediment)
     {
         if (deflector.DeflectorPoints > impediment.DamagePoints)
         {
-            deflector.DeflectorPoints -= impediment.DamagePoints;
-            impediment.DamagePoints = 0;
+            deflector.DecreaseDeflectorPoints(impediment.DamagePoints);
+            impediment.DecreasePoints(impediment.DamagePoints);
             return DeflectorProtectionResult.Withstood;
         }
 
-        impediment.DamagePoints -= deflector.DeflectorPoints;
-        deflector.DeflectorPoints = 0;
+        impediment.DecreasePoints(deflector.DeflectorPoints);
+        deflector.DecreaseDeflectorPoints(deflector.DeflectorPoints);
         return DeflectorProtectionResult.Destroyed;
     }
 
@@ -47,13 +57,13 @@ public class DeflectorDispatcherFactory
     {
         if (deflector.PhotonPoints > impediment.DamagePoints)
         {
-            deflector.PhotonPoints -= impediment.DamagePoints;
-            impediment.DamagePoints = 0;
+            deflector.DecreasePhotonPoints(impediment.DamagePoints);
+            impediment.DecreasePoints(impediment.DamagePoints);
             return DeflectorProtectionResult.Withstood;
         }
 
-        impediment.DamagePoints -= deflector.PhotonPoints;
-        deflector.PhotonPoints = 0;
+        impediment.DecreasePoints(deflector.PhotonPoints);
+        deflector.DecreasePhotonPoints(deflector.PhotonPoints);
         return DeflectorProtectionResult.Destroyed;
     }
 
@@ -66,8 +76,8 @@ public class DeflectorDispatcherFactory
     {
         if (impediment.DamagePoints == 0) return DeflectorProtectionResult.Withstood;
 
-        impediment.DamagePoints = 0;
-        deflector.DeflectorPoints = 0;
+        impediment.DecreasePoints(impediment.DamagePoints);
+        deflector.DecreaseDeflectorPoints(deflector.DeflectorPoints);
         return DeflectorProtectionResult.Destroyed;
     }
 }

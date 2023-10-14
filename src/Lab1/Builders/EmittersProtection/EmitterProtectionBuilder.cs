@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Emitters;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Builders;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Emitters;
 using Itmo.ObjectOrientedProgramming.Lab1.Services.Impediment;
 
@@ -11,10 +11,6 @@ public class EmitterProtectionBuilder<TProtectionResult, TEmitter> : IEmitterPro
     IImpedimentVisitor<TProtectionResult>
     where TEmitter : IEmitter
 {
-    #pragma warning disable SK1400
-    private readonly EmitterDispatcher<TProtectionResult> _dispatcher;
-    #pragma warning restore SK1400
-
     private readonly Func<TEmitter, IImpediment, TProtectionResult> _protect;
     private Func<TEmitter, Meteorites, TProtectionResult> _protectMeteorites;
     private Func<TEmitter, AntimatterFlares, TProtectionResult> _protectAntimatterFlares;
@@ -26,13 +22,15 @@ public class EmitterProtectionBuilder<TProtectionResult, TEmitter> : IEmitterPro
         EmitterDispatcher<TProtectionResult> dispatcher,
         Func<TEmitter, IImpediment, TProtectionResult> protect)
     {
-        _dispatcher = dispatcher;
+        Dispatcher = dispatcher;
         _protect = protect;
 
-        _protectMeteorites = (d, i) => protect(d, i);
-        _protectAntimatterFlares = (d, i) => protect(d, i);
-        _protectCosmoWhales = (d, i) => protect(d, i);
+        _protectMeteorites = (emitter, impediment) => protect(emitter, impediment);
+        _protectAntimatterFlares = (emitter, impediment) => protect(emitter, impediment);
+        _protectCosmoWhales = (emitter, impediment) => protect(emitter, impediment);
     }
+
+    private EmitterDispatcher<TProtectionResult> Dispatcher { get; }
 
     public IImpedimentVisitor<TProtectionResult> Emitter(TEmitter emitter)
     {
@@ -58,28 +56,27 @@ public class EmitterProtectionBuilder<TProtectionResult, TEmitter> : IEmitterPro
         return this;
     }
 
-    #pragma warning disable SK1400
     public EmitterDispatcher<TProtectionResult> Confirm()
     {
-        return _dispatcher;
+        return Dispatcher;
     }
-    #pragma warning restore SK1400
+#pragma warning restore SK1400
 
     public TProtectionResult Visit(Meteorites impediment)
     {
-        if (_emitter == null) throw new NoNullAllowedException(nameof(_emitter));
+        if (_emitter is null) throw new BuildComponentCannotBeNull(nameof(_emitter));
         return _protectMeteorites(_emitter, impediment);
     }
 
     public TProtectionResult Visit(AntimatterFlares impediment)
     {
-        if (_emitter == null) throw new NoNullAllowedException(nameof(_emitter));
+        if (_emitter is null) throw new BuildComponentCannotBeNull(nameof(_emitter));
         return _protectAntimatterFlares(_emitter, impediment);
     }
 
     public TProtectionResult Visit(CosmoWhales impediment)
     {
-        if (_emitter == null) throw new NoNullAllowedException(nameof(_emitter));
+        if (_emitter is null) throw new BuildComponentCannotBeNull(nameof(_emitter));
         return _protectCosmoWhales(_emitter, impediment);
     }
 }

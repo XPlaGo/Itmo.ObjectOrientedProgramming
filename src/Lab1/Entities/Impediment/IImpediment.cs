@@ -5,6 +5,8 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
 
 public interface IImpediment : ICloneable
 {
-    double DamagePoints { get; set; }
+    double DamagePoints { get; }
+    double DecreasePoints(double value);
+    double IncreasePoints(double value);
     T AcceptImpedimentService<T>(IImpedimentVisitor<T> visitor);
 }

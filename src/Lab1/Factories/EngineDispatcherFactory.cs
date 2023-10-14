@@ -32,17 +32,37 @@ public class EngineDispatcherFactory
                 .Confirm()
             .WithOmegaJumpEngine
                 .ThroughNebulaeOfIncreasedDensityOfSpace(Fly)
+                .Confirm()
+            .WithNoneImpulseEngine
+                .ThroughSpace(FlyNone)
+                .ThroughNebulaeOfIncreasedDensityOfSpace(FlyNone)
+                .ThroughNebulaeOfNitrideParticles(FlyNone)
+                .Confirm()
+            .WithNoneJumpEngine
+                .ThroughSpace(FlyNone)
+                .ThroughNebulaeOfIncreasedDensityOfSpace(FlyNone)
+                .ThroughNebulaeOfNitrideParticles(FlyNone)
                 .Confirm();
     }
 
     private static FlightResultResponse FlyBlock(IEngine engine, IEnvironment environment)
     {
-        return new FlightResultResponse(FlightResult.EngineNotSuit);
+        return new FlightResultResponse(FlightResult.None, new FlightResultData(0, engine.CurrentVelocity, 0, 0));
     }
 
     private static FlightResultResponse FlyTemplate(IEngine engine, IEnvironment environment, double effectiveness)
     {
         return engine.Fly(environment, effectiveness);
+    }
+
+    private FlightResultResponse FlyNone(NoneJumpEngine engine, IEnvironment environment)
+    {
+        return new FlightResultResponse(FlightResult.None, FlightResultData.Empty());
+    }
+
+    private FlightResultResponse FlyNone(NoneImpulseEngine engine, IEnvironment environment)
+    {
+        return new FlightResultResponse(FlightResult.None, FlightResultData.Empty());
     }
 
     private FlightResultResponse Fly(ImpulseEngine engine, Space environment)

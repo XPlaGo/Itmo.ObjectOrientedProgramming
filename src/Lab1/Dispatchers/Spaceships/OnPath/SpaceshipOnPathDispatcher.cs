@@ -9,16 +9,15 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Spaceships.OnPath;
 
 public class SpaceshipOnPathDispatcher<TResult> : ISpaceshipOnPathVisitor<IPathVisitor<TResult>>
 {
-    private readonly SpaceshipOnPathBuilder<TResult, ISpaceship> _spaceshipBuilder;
-
     public SpaceshipOnPathDispatcher(Func<ISpaceship, IPath, TResult> fly)
     {
-        _spaceshipBuilder = new SpaceshipOnPathBuilder<TResult, ISpaceship>(this, fly);
+        BySpaceship = new SpaceshipOnPathBuilder<TResult, ISpaceship>(this, fly);
     }
 
-    public ISpaceshipOnPathBuilder<TResult, ISpaceship> BySpaceship => _spaceshipBuilder;
+    public SpaceshipOnPathBuilder<TResult, ISpaceship> BySpaceship { get; }
+
     public IPathVisitor<TResult> Visit(ISpaceship spaceship)
     {
-        return _spaceshipBuilder.Spaceship(spaceship);
+        return BySpaceship.Spaceship(spaceship);
     }
 }

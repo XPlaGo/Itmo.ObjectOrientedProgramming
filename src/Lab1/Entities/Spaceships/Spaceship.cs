@@ -1,6 +1,6 @@
 ﻿using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.ImpulseEngine;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.JumpEngine;
-using Itmo.ObjectOrientedProgramming.Lab1.Models.Armor;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Deflectors;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Emitters;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Spaceship.OnPath;
@@ -10,22 +10,19 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
 public abstract class Spaceship : ISpaceship
 {
-    private double _currentVelocity;
-    public abstract ImpulseEngine? ImpulseEngine { get; }
-    public abstract JumpEngine? JumpEngine { get; }
-    public abstract IEmitter? Emitter { get; }
-    public abstract IDeflector? Deflector { get; }
-    public abstract IArmor? Armor { get; }
+    public abstract ImpulseEngine ImpulseEngine { get; }
+    public abstract JumpEngine JumpEngine { get; }
+    public abstract IEmitter Emitter { get; }
+    public abstract IDeflector Deflector { get; }
+    public abstract IArmor Armor { get; }
 
-    public double CurrentVelocity
+    public double CurrentVelocity { get; private set; }
+
+    public void UpdateVelocity(double value)
     {
-        get => _currentVelocity;
-        set
-        {
-            _currentVelocity = value;
-            if (ImpulseEngine != null) ImpulseEngine.CurrentVelocity = value;
-            if (JumpEngine != null) JumpEngine.CurrentVelocity = value;
-        }
+        CurrentVelocity = value;
+        ImpulseEngine?.UpdateVelocity(value);
+        JumpEngine?.UpdateVelocity(value);
     }
 
     public abstract T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor);

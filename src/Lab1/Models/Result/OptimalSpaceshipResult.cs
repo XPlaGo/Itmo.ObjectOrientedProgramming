@@ -1,15 +1,17 @@
-﻿using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.SpaceshipResult;
+﻿using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Validation;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.SpaceshipResult;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Models.Result;
 
 public class OptimalSpaceshipResult
 {
-    public OptimalSpaceshipResult(int index = -1, SpaceshipResultResponse? response = null)
+    public OptimalSpaceshipResult(SpaceshipResultResponse response, int index = -1)
     {
+        DoubleValidationException.ThrowIfLessThan(index, -1);
         Index = index;
         Response = response;
     }
 
-    public int Index { get; init; }
-    public SpaceshipResultResponse? Response { get; init; }
+    public int Index { get; }
+    public SpaceshipResultResponse? Response { get; }
 }

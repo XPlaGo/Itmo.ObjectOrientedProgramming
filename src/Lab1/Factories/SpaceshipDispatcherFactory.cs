@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Spaceships.OnPath;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Spaceships.ThroughEnvironment;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines;
+using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.ImpulseEngine;
+using Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.JumpEngine;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Environments;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Engines;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Deflectors;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Emitters;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.ArmorProtectionResult;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.DeflectorProtectionResult;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.EmitterProtectionResult;
@@ -68,25 +72,24 @@ public class SpaceshipDispatcherFactory
         IEmitterVisitor<IImpedimentVisitor<EmitterProtectionResult>> emitterVisitor = emitterFactory.CreateDispatcher();
 
         FlightResultResponse flightResultResponse;
-        SpaceshipResultData? spaceshipResultData = null;
 
         switch (spaceship)
         {
-            case { JumpEngine: not null, ImpulseEngine: null }:
+            case { JumpEngine: not (null or NoneJumpEngine), ImpulseEngine: null or NoneImpulseEngine }:
             {
                 flightResultResponse = FlyEngine(spaceship.JumpEngine, spaceship, environment);
 
                 break;
             }
 
-            case { JumpEngine: null, ImpulseEngine: not null }:
+            case { JumpEngine: null or NoneJumpEngine, ImpulseEngine: not (null or NoneImpulseEngine) }:
             {
                 flightResultResponse = FlyEngine(spaceship.ImpulseEngine, spaceship, environment);
 
                 break;
             }
 
-            case { JumpEngine: not null, ImpulseEngine: not null }:
+            case { JumpEngine: not (null or NoneJumpEngine), ImpulseEngine: not (null or NoneImpulseEngine) }:
                 flightResultResponse = FlyEngines(
                         preferJumpEngine ? spaceship.JumpEngine : spaceship.ImpulseEngine,
                         preferJumpEngine ? spaceship.ImpulseEngine : spaceship.JumpEngine,
@@ -95,14 +98,15 @@ public class SpaceshipDispatcherFactory
 
                 break;
             default:
-                throw new NoNullAllowedException(preferJumpEngine ? nameof(spaceship.JumpEngine) : nameof(spaceship.ImpulseEngine));
+                throw new NoEnginesException(preferJumpEngine ? nameof(spaceship.JumpEngine) : nameof(spaceship.ImpulseEngine));
         }
 
-        if (flightResultResponse.FlightResultData != null)
-            spaceshipResultData = new SpaceshipResultData(flightResultResponse.FlightResultData);
+        var spaceshipResultData = new SpaceshipResultData(flightResultResponse.FlightResultData);
 
         switch (flightResultResponse.FlightResult)
         {
+            case FlightResult.None:
+                return new SpaceshipResultResponse(SpaceshipResult.None, spaceshipResultData);
             case FlightResult.FuelRanOut:
                 return new SpaceshipResultResponse(SpaceshipResult.NotEnoughFuel, spaceshipResultData);
             case FlightResult.PartiallyOvercome:
@@ -113,13 +117,13 @@ public class SpaceshipDispatcherFactory
 
         foreach (IImpediment impediment in environment.Impediments)
         {
-            if (spaceship.Emitter != null)
+            if (spaceship.Emitter is not (null or NoneEmitter))
             {
                 if (impediment.DamagePoints > 0)
                     impediment.AcceptImpedimentService(spaceship.Emitter.AcceptEmitterVisitor(emitterVisitor));
             }
 
-            if (spaceship.Deflector != null)
+            if (spaceship.Deflector is not (null or NoneDeflector))
             {
                 if (impediment.DamagePoints > 0)
                 {
@@ -127,7 +131,7 @@ public class SpaceshipDispatcherFactory
                 }
             }
 
-            if (spaceship.Armor == null) continue;
+            if (spaceship.Armor is null) continue;
             {
                 if (impediment.DamagePoints > 0)
                 {
@@ -157,23 +161,13 @@ public class SpaceshipDispatcherFactory
 
         FlightResultResponse flightResult = environment.AcceptEnvironmentVisitor(engine.AcceptEngineVisitor(engineVisitor));
 
-        if (flightResult.FlightResultData != null)
-            spaceship.CurrentVelocity = flightResult.FlightResultData.CurrentVelocity;
-
-        switch (flightResult.FlightResult)
+        if (flightResult.FlightResult is FlightResult.Overcome or FlightResult.PartiallyOvercome)
         {
-            case FlightResult.Overcome:
-                if (flightResult.FlightResultData == null)
-                    throw new NoNullAllowedException(nameof(flightResult.FlightResultData));
+            if (flightResult.FlightResultData is null)
+                throw new FlightDataCannotBeNull(nameof(flightResult.FlightResultData));
 
-                environment.Length -= flightResult.FlightResultData.Length;
-                break;
-            case FlightResult.PartiallyOvercome:
-                if (flightResult.FlightResultData == null)
-                    throw new NoNullAllowedException(nameof(flightResult.FlightResultData));
-
-                environment.Length -= flightResult.FlightResultData.Length;
-                break;
+            spaceship.UpdateVelocity(flightResult.FlightResultData.CurrentVelocity);
+            environment.DecreaseLength(flightResult.FlightResultData.Length);
         }
 
         return new FlightResultResponse(flightResult.FlightResult, flightResult.FlightResultData);
@@ -191,20 +185,22 @@ public class SpaceshipDispatcherFactory
 
         FlightResultResponse firstFlightResponse = environment.AcceptEnvironmentVisitor(firstEngine.AcceptEngineVisitor(engineVisitor));
 
-        if (firstFlightResponse.FlightResultData != null)
-            spaceship.CurrentVelocity = firstFlightResponse.FlightResultData.CurrentVelocity;
-
         FlightResult flightResult = firstFlightResponse.FlightResult;
-        FlightResultData? flightResultData = firstFlightResponse.FlightResultData;
+        FlightResultData flightResultData = firstFlightResponse.FlightResultData;
 
-        if (flightResultData != null)
-        {
-            environment.Length -= flightResultData.Length;
-            spaceship.CurrentVelocity = flightResultData.CurrentVelocity;
-        }
+        environment.DecreaseLength(flightResultData.Length);
+        spaceship.UpdateVelocity(flightResultData.CurrentVelocity);
 
         switch (firstFlightResponse.FlightResult)
         {
+            case FlightResult.None:
+                FlightResultResponse secondFlightResponseN = FlyEngine(secondEngine, spaceship, environment);
+
+                flightResultData = secondFlightResponseN.FlightResultData;
+                flightResult = secondFlightResponseN.FlightResult;
+
+                break;
+
             case FlightResult.FuelRanOut:
                 FlightResultResponse secondFlightResponseFro = FlyEngine(secondEngine, spaceship, environment);
 
@@ -228,8 +224,8 @@ public class SpaceshipDispatcherFactory
 
             case FlightResult.PartiallyOvercome:
             {
-                if (firstFlightResponse.FlightResultData == null)
-                    throw new NoNullAllowedException(nameof(firstFlightResponse.FlightResultData));
+                if (firstFlightResponse.FlightResultData is null)
+                    throw new FlightDataCannotBeNull(nameof(firstFlightResponse.FlightResultData));
 
                 FlightResultResponse secondEngineResponsePo = FlyEngine(secondEngine, spaceship, environment);
 
@@ -245,25 +241,22 @@ public class SpaceshipDispatcherFactory
                         break;
                 }
 
-                if (secondEngineResponsePo.FlightResultData != null)
-                {
-                    environment.Length -= secondEngineResponsePo.FlightResultData.Length;
-                    spaceship.CurrentVelocity = secondEngineResponsePo.FlightResultData.CurrentVelocity;
+                environment.DecreaseLength(secondEngineResponsePo.FlightResultData.Length);
+                spaceship.UpdateVelocity(secondEngineResponsePo.FlightResultData.CurrentVelocity);
 
-                    flightResultData = new FlightResultData(
-                        secondEngineResponsePo.FlightResultData.Time + firstFlightResponse.FlightResultData.Time,
-                        secondEngineResponsePo.FlightResultData.CurrentVelocity,
-                        secondEngineResponsePo.FlightResultData.Length + firstFlightResponse.FlightResultData.Length,
-                        secondEngineResponsePo.FlightResultData.Fuel + firstFlightResponse.FlightResultData.Fuel);
-                }
+                flightResultData = new FlightResultData(
+                    secondEngineResponsePo.FlightResultData.Time + firstFlightResponse.FlightResultData.Time,
+                    secondEngineResponsePo.FlightResultData.CurrentVelocity,
+                    secondEngineResponsePo.FlightResultData.Length + firstFlightResponse.FlightResultData.Length,
+                    secondEngineResponsePo.FlightResultData.Fuel + firstFlightResponse.FlightResultData.Fuel);
 
                 break;
             }
 
             case FlightResult.Overcome:
             {
-                if (firstFlightResponse.FlightResultData == null)
-                    throw new NoNullAllowedException(nameof(firstFlightResponse.FlightResultData));
+                if (firstFlightResponse.FlightResultData is null)
+                    throw new FlightDataCannotBeNull(nameof(firstFlightResponse.FlightResultData));
 
                 break;
             }
@@ -293,13 +286,10 @@ public class SpaceshipDispatcherFactory
             SpaceshipResultResponse response =
                 environment.AcceptEnvironmentVisitor(spaceship.AcceptSpaceshipVisitor(throughEnvironmentDispatcher));
 
-            if (response.SpaceshipResultData != null)
-            {
-                data.Time += response.SpaceshipResultData.Time;
-                data.CurrentVelocity = response.SpaceshipResultData.CurrentVelocity;
-                data.Length += response.SpaceshipResultData.Length;
-                data.Fuel += response.SpaceshipResultData.Fuel;
-            }
+            data.Time += response.SpaceshipResultData.Time;
+            data.CurrentVelocity = response.SpaceshipResultData.CurrentVelocity;
+            data.Length += response.SpaceshipResultData.Length;
+            data.Fuel += response.SpaceshipResultData.Fuel;
 
             if (response.SpaceshipResult != SpaceshipResult.Overcome)
             {

@@ -9,44 +9,43 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Deflectors;
 
 public class DeflectorDispatcher<TProtectionResult> : IDeflectorsVisitor<IImpedimentVisitor<TProtectionResult>>
 {
-    private readonly DeflectorProtectionBuilder<TProtectionResult, FirstClassDeflector> _firstClassDeflectorBuilder;
-    private readonly DeflectorProtectionBuilder<TProtectionResult, SecondClassDeflector> _secondClassDeflectorBuilder;
-    private readonly DeflectorProtectionBuilder<TProtectionResult, ThirdClassDeflector> _thirdClassDeflectorBuilder;
-    private readonly DeflectorProtectionBuilder<TProtectionResult, PhotonDeflector> _photonDeflectorBuilder;
-
     public DeflectorDispatcher(Func<IDeflector, IImpediment, TProtectionResult> protect)
     {
-        _firstClassDeflectorBuilder = new DeflectorProtectionBuilder<TProtectionResult, FirstClassDeflector>(this, protect);
-        _secondClassDeflectorBuilder = new DeflectorProtectionBuilder<TProtectionResult, SecondClassDeflector>(this, protect);
-        _thirdClassDeflectorBuilder = new DeflectorProtectionBuilder<TProtectionResult, ThirdClassDeflector>(this, protect);
-        _photonDeflectorBuilder = new DeflectorProtectionBuilder<TProtectionResult, PhotonDeflector>(this, protect);
+        UseFirstClassDeflector = new DeflectorProtectionBuilder<TProtectionResult, FirstClassDeflector>(this, protect);
+        UseSecondClassDeflector = new DeflectorProtectionBuilder<TProtectionResult, SecondClassDeflector>(this, protect);
+        UseThirdClassDeflector = new DeflectorProtectionBuilder<TProtectionResult, ThirdClassDeflector>(this, protect);
+        UsePhotonDeflector = new DeflectorProtectionBuilder<TProtectionResult, PhotonDeflector>(this, protect);
+        UseNoneDeflector = new DeflectorProtectionBuilder<TProtectionResult, NoneDeflector>(this, protect);
     }
 
-    public IDeflectorProtectionBuilder<TProtectionResult, FirstClassDeflector> UseFirstClassDeflector => _firstClassDeflectorBuilder;
-
-    public IDeflectorProtectionBuilder<TProtectionResult, SecondClassDeflector> UseSecondClassDeflector => _secondClassDeflectorBuilder;
-
-    public IDeflectorProtectionBuilder<TProtectionResult, ThirdClassDeflector> UseThirdClassDeflector => _thirdClassDeflectorBuilder;
-
-    public IDeflectorProtectionBuilder<TProtectionResult, PhotonDeflector> UsePhotonDeflector => _photonDeflectorBuilder;
+    public DeflectorProtectionBuilder<TProtectionResult, FirstClassDeflector> UseFirstClassDeflector { get; }
+    public DeflectorProtectionBuilder<TProtectionResult, SecondClassDeflector> UseSecondClassDeflector { get; }
+    public DeflectorProtectionBuilder<TProtectionResult, ThirdClassDeflector> UseThirdClassDeflector { get; }
+    public DeflectorProtectionBuilder<TProtectionResult, PhotonDeflector> UsePhotonDeflector { get; }
+    public DeflectorProtectionBuilder<TProtectionResult, NoneDeflector> UseNoneDeflector { get; }
 
     public IImpedimentVisitor<TProtectionResult> Visit(FirstClassDeflector deflector)
     {
-        return _firstClassDeflectorBuilder.Deflector(deflector);
+        return UseFirstClassDeflector.Deflector(deflector);
     }
 
     public IImpedimentVisitor<TProtectionResult> Visit(SecondClassDeflector deflector)
     {
-        return _secondClassDeflectorBuilder.Deflector(deflector);
+        return UseSecondClassDeflector.Deflector(deflector);
     }
 
     public IImpedimentVisitor<TProtectionResult> Visit(ThirdClassDeflector deflector)
     {
-        return _thirdClassDeflectorBuilder.Deflector(deflector);
+        return UseThirdClassDeflector.Deflector(deflector);
     }
 
     public IImpedimentVisitor<TProtectionResult> Visit(PhotonDeflector deflector)
     {
-        return _photonDeflectorBuilder.Deflector(deflector);
+        return UsePhotonDeflector.Deflector(deflector);
+    }
+
+    public IImpedimentVisitor<TProtectionResult> Visit(NoneDeflector deflector)
+    {
+        return UseNoneDeflector.Deflector(deflector);
     }
 }

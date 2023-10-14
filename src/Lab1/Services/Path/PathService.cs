@@ -28,19 +28,19 @@ public class PathService : IPathService
         return path.AcceptPathVisitor(spaceship.AcceptSpaceshipVisitor(_dispatcher));
     }
 
-    public OptimalSpaceshipResult GetOptimal(IList<ISpaceship> spaceships, IPath path)
+    public OptimalSpaceshipResult GetOptimal(IReadOnlyCollection<ISpaceship> spaceships, IPath path)
     {
         return spaceships
             .Select((spaceship, index) =>
             {
                 var pathClone = (IPath)path.Clone();
                 SpaceshipResultResponse response = Fly(spaceship, pathClone);
-                return new OptimalSpaceshipResult(index, response);
+                return new OptimalSpaceshipResult(response, index);
             })
             .Where(response => response.Response is { SpaceshipResult: SpaceshipResult.Overcome, SpaceshipResultData: not null })
             .OrderBy(response =>
             {
-                if (response.Response is { SpaceshipResultData: not null })
+                if (response.Response is not null)
                     return response.Response.SpaceshipResultData.Length;
                 return 0;
             })
@@ -56,6 +56,9 @@ public class PathService : IPathService
                     return response.Response.SpaceshipResultData.Time;
                 return 0;
             })
-            .LastOrDefault(new OptimalSpaceshipResult(-1));
+            .LastOrDefault(new OptimalSpaceshipResult(
+                new SpaceshipResultResponse(
+                    SpaceshipResult.None,
+                    SpaceshipResultData.Empty())));
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Spaceships.OnPath;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Builders;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Path;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Builders.Spaceships.OnPath;
@@ -12,7 +12,7 @@ public class SpaceshipOnPathBuilder<TResult, TSpaceship> : ISpaceshipOnPathBuild
     where TSpaceship : ISpaceship
 {
     private readonly Func<TSpaceship, IPath, TResult> _fly;
-    private Func<TSpaceship, Entities.Path.Path, TResult> _pathFly;
+    private Func<TSpaceship, SequentialPath, TResult> _pathFly;
 
     private TSpaceship? _spaceship;
 
@@ -23,10 +23,10 @@ public class SpaceshipOnPathBuilder<TResult, TSpaceship> : ISpaceshipOnPathBuild
         Dispatcher = dispatcher;
         _fly = fly;
 
-        _pathFly = (a, b) => fly(a, b);
+        _pathFly = (spaceship, path) => fly(spaceship, path);
     }
 
-    public SpaceshipOnPathDispatcher<TResult> Dispatcher { get; }
+    private SpaceshipOnPathDispatcher<TResult> Dispatcher { get; }
 
     public IPathVisitor<TResult> Spaceship(TSpaceship spaceship)
     {
@@ -34,7 +34,7 @@ public class SpaceshipOnPathBuilder<TResult, TSpaceship> : ISpaceshipOnPathBuild
         return this;
     }
 
-    public ISpaceshipOnPathBuilder<TResult, TSpaceship> OnPath(Func<TSpaceship, Entities.Path.Path, TResult> fly)
+    public ISpaceshipOnPathBuilder<TResult, TSpaceship> OnPath(Func<TSpaceship, SequentialPath, TResult> fly)
     {
         _pathFly = fly;
         return this;
@@ -45,9 +45,9 @@ public class SpaceshipOnPathBuilder<TResult, TSpaceship> : ISpaceshipOnPathBuild
         return Dispatcher;
     }
 
-    public TResult Visit(Entities.Path.Path path)
+    public TResult Visit(SequentialPath sequentialPath)
     {
-        if (_spaceship == null) throw new NoNullAllowedException(nameof(_spaceship));
-        return _pathFly(_spaceship, path);
+        if (_spaceship is null) throw new BuildComponentCannotBeNull(nameof(_spaceship));
+        return _pathFly(_spaceship, sequentialPath);
     }
 }

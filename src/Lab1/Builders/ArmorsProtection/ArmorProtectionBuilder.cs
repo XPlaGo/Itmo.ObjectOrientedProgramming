@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
-using Itmo.ObjectOrientedProgramming.Lab1.Models.Armor;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Builders;
+using Itmo.ObjectOrientedProgramming.Lab1.Models.Armors;
 using Itmo.ObjectOrientedProgramming.Lab1.Services.Impediment;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Builders.ArmorsProtection;
@@ -11,10 +11,6 @@ public class ArmorProtectionBuilder<TProtectionResult, TArmor> : IArmorProtectio
     IImpedimentVisitor<TProtectionResult>
     where TArmor : IArmor
 {
-#pragma warning disable SK1400
-    private readonly ArmorDispatcher<TProtectionResult> _dispatcher;
-#pragma warning restore SK1400
-
     private readonly Func<TArmor, IImpediment, TProtectionResult> _protect;
     private Func<TArmor, Meteorites, TProtectionResult> _protectMeteorites;
     private Func<TArmor, AntimatterFlares, TProtectionResult> _protectAntimatterFlares;
@@ -26,13 +22,15 @@ public class ArmorProtectionBuilder<TProtectionResult, TArmor> : IArmorProtectio
         ArmorDispatcher<TProtectionResult> dispatcher,
         Func<TArmor, IImpediment, TProtectionResult> protect)
     {
-        _dispatcher = dispatcher;
+        Dispatcher = dispatcher;
         _protect = protect;
 
-        _protectMeteorites = (d, i) => protect(d, i);
-        _protectAntimatterFlares = (d, i) => protect(d, i);
-        _protectCosmoWhales = (d, i) => protect(d, i);
+        _protectMeteorites = (armor, impediment) => protect(armor, impediment);
+        _protectAntimatterFlares = (armor, impediment) => protect(armor, impediment);
+        _protectCosmoWhales = (armor, impediment) => protect(armor, impediment);
     }
+
+    private ArmorDispatcher<TProtectionResult> Dispatcher { get; }
 
     public IImpedimentVisitor<TProtectionResult> Armor(TArmor armor)
     {
@@ -58,28 +56,26 @@ public class ArmorProtectionBuilder<TProtectionResult, TArmor> : IArmorProtectio
         return this;
     }
 
-    #pragma warning disable SK1400
     public ArmorDispatcher<TProtectionResult> Confirm()
     {
-        return _dispatcher;
+        return Dispatcher;
     }
-    #pragma warning restore SK1400
 
     public TProtectionResult Visit(Meteorites impediment)
     {
-        if (_armor == null) throw new NoNullAllowedException(nameof(_armor));
+        if (_armor is null) throw new BuildComponentCannotBeNull(nameof(_armor));
         return _protectMeteorites(_armor, impediment);
     }
 
     public TProtectionResult Visit(AntimatterFlares impediment)
     {
-        if (_armor == null) throw new NoNullAllowedException(nameof(_armor));
+        if (_armor is null) throw new BuildComponentCannotBeNull(nameof(_armor));
         return _protectAntimatterFlares(_armor, impediment);
     }
 
     public TProtectionResult Visit(CosmoWhales impediment)
     {
-        if (_armor == null) throw new NoNullAllowedException(nameof(_armor));
+        if (_armor is null) throw new BuildComponentCannotBeNull(nameof(_armor));
         return _protectCosmoWhales(_armor, impediment);
     }
 }

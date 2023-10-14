@@ -1,5 +1,4 @@
 ﻿using System;
-using Itmo.ObjectOrientedProgramming.Lab1.Config;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Environments;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Result.FlightResult;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Engines;
@@ -8,12 +7,17 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Engines.JumpEngine;
 
 public class OmegaJumpEngine : JumpEngine
 {
+    private const double OmegaJumpEngineFuelConsumption = 1;
+    private const double OmegaJumpEngineEpsilon = 0.001;
+    private const double OmegaJumpEngineUpperbound = 1e6;
+    private const double OmegaJumpEngineMaxIterations = 100;
+
     public OmegaJumpEngine(double initialFuelLevel)
         : base(initialFuelLevel)
     {
     }
 
-    public override double FuelConsumption => EnginesConfig.OmegaJumpEngineFuelConsumption;
+    public override double FuelConsumption => OmegaJumpEngineFuelConsumption;
 
     public override T AcceptEngineVisitor<T>(IEngineVisitor<T> visitor)
     {
@@ -24,7 +28,7 @@ public class OmegaJumpEngine : JumpEngine
     public override FlightResultResponse Fly(IEnvironment environment, double effectiveness)
     {
         ArgumentNullException.ThrowIfNull(environment);
-        if (FuelLevel == 0) return new FlightResultResponse(FlightResult.FuelRanOut);
+        if (FuelLevel == 0) return new FlightResultResponse(FlightResult.FuelRanOut, new FlightResultData(0, CurrentVelocity, 0, 0));
 
         double effectiveLength = environment.Length / effectiveness;
         double startTime = GetTimeFromVelocity(CurrentVelocity);
@@ -66,17 +70,17 @@ public class OmegaJumpEngine : JumpEngine
         Func<double, double> function,
         Func<double, double> functionDerivative)
     {
-        double t = EnginesConfig.OmegaJumpEngineUpperbound;
-        int i = 0;
+        double time = OmegaJumpEngineUpperbound;
+        int iteration = 0;
 
-        while (Math.Abs(function(t)) > EnginesConfig.OmegaJumpEngineEpsilon &&
-               i < EnginesConfig.OmegaJumpEngineMaxIterations)
+        while (Math.Abs(function(time)) > OmegaJumpEngineEpsilon &&
+               iteration < OmegaJumpEngineMaxIterations)
         {
-            t -= function(t) / functionDerivative(t);
-            i++;
+            time -= function(time) / functionDerivative(time);
+            iteration++;
         }
 
-        return t;
+        return time;
     }
 
     private static double GetTimeFromVelocity(double velocity)

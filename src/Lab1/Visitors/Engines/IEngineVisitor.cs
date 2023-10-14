@@ -14,4 +14,8 @@ public interface IEngineVisitor<out T>
     T Fly(OmegaJumpEngine engine);
 
     T Fly(GammaJumpEngine engine);
+
+    T Fly(NoneImpulseEngine engine);
+
+    T Fly(NoneJumpEngine engine);
 }

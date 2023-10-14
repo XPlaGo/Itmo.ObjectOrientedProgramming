@@ -7,6 +7,6 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
 
 public interface IPath : ICloneable
 {
-    IList<IEnvironment> Environments { get; }
+    IReadOnlyCollection<IEnvironment> Environments { get; }
     T AcceptPathVisitor<T>(IPathVisitor<T> visitor);
 }

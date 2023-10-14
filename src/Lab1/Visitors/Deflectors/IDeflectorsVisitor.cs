@@ -8,4 +8,5 @@ public interface IDeflectorsVisitor<out T>
     T Visit(SecondClassDeflector deflector);
     T Visit(ThirdClassDeflector deflector);
     T Visit(PhotonDeflector deflector);
+    T Visit(NoneDeflector deflector);
 }

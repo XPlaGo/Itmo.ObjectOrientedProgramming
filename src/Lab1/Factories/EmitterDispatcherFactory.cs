@@ -24,7 +24,7 @@ public class EmitterDispatcherFactory
 
     private EmitterProtectionResult Protect(AntiNeutrinoEmitter emitter, CosmoWhales impediment)
     {
-        impediment.DamagePoints = 0;
+        impediment.DecreasePoints(impediment.DamagePoints);
         return EmitterProtectionResult.HadEffect;
     }
 }

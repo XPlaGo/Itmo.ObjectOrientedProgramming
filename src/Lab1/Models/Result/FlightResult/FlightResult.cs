@@ -2,6 +2,7 @@
 
 public enum FlightResult
 {
+    None,
     Overcome,
     PartiallyOvercome,
     FuelRanOut,

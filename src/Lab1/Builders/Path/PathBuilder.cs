@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Environments;
+using Itmo.ObjectOrientedProgramming.Lab1.Entities.Path;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Builders.Path;
 
-public class PathBuilder : IPathBuilder<Entities.Path.Path>
+public class PathBuilder : IPathBuilder<SequentialPath>
 {
     private readonly List<IEnvironment> _environments = new();
 
-    public Entities.Path.Path Build()
+    public SequentialPath Build()
     {
-        return new Entities.Path.Path(_environments);
+        return new SequentialPath(_environments);
     }
 
-    public IPathBuilder<Entities.Path.Path> AddEnvironment(IEnvironment environment)
+    public IPathBuilder<SequentialPath> AddEnvironment(IEnvironment environment)
     {
         _environments.Add(environment);
         return this;

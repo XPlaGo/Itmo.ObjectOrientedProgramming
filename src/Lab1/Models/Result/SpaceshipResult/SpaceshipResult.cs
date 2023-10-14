@@ -2,6 +2,7 @@
 
 public enum SpaceshipResult
 {
+    None,
     Overcome,
     NotEnoughFuel,
     Destroyed,

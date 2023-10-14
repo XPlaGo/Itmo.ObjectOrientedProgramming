@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Deflectors;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Impediment;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Builders;
 using Itmo.ObjectOrientedProgramming.Lab1.Models.Deflectors;
 using Itmo.ObjectOrientedProgramming.Lab1.Services.Impediment;
 
@@ -11,10 +11,6 @@ public class DeflectorProtectionBuilder<TProtectionResult, TDeflector> : IDeflec
     IImpedimentVisitor<TProtectionResult>
     where TDeflector : IDeflector
 {
-    #pragma warning disable SK1400
-    private readonly DeflectorDispatcher<TProtectionResult> _dispatcher;
-    #pragma warning restore SK1400
-
     private readonly Func<TDeflector, IImpediment, TProtectionResult> _protect;
     private Func<TDeflector, Meteorites, TProtectionResult> _protectMeteorites;
     private Func<TDeflector, AntimatterFlares, TProtectionResult> _protectAntimatterFlares;
@@ -26,13 +22,15 @@ public class DeflectorProtectionBuilder<TProtectionResult, TDeflector> : IDeflec
         DeflectorDispatcher<TProtectionResult> dispatcher,
         Func<TDeflector, IImpediment, TProtectionResult> protect)
     {
-        _dispatcher = dispatcher;
+        Dispatcher = dispatcher;
         _protect = protect;
 
-        _protectMeteorites = (d, i) => protect(d, i);
-        _protectAntimatterFlares = (d, i) => protect(d, i);
-        _protectCosmoWhales = (d, i) => protect(d, i);
+        _protectMeteorites = (deflector, impediment) => protect(deflector, impediment);
+        _protectAntimatterFlares = (deflector, impediment) => protect(deflector, impediment);
+        _protectCosmoWhales = (deflector, impediment) => protect(deflector, impediment);
     }
+
+    private DeflectorDispatcher<TProtectionResult> Dispatcher { get; }
 
     public IImpedimentVisitor<TProtectionResult> Deflector(TDeflector deflector)
     {
@@ -58,28 +56,26 @@ public class DeflectorProtectionBuilder<TProtectionResult, TDeflector> : IDeflec
         return this;
     }
 
-    #pragma warning disable SK1400
     public DeflectorDispatcher<TProtectionResult> Confirm()
     {
-        return _dispatcher;
+        return Dispatcher;
     }
-    #pragma warning restore SK1400
 
     public TProtectionResult Visit(Meteorites impediment)
     {
-        if (_deflector == null) throw new NoNullAllowedException(nameof(_deflector));
+        if (_deflector is null) throw new BuildComponentCannotBeNull(nameof(_deflector));
         return _protectMeteorites(_deflector, impediment);
     }
 
     public TProtectionResult Visit(AntimatterFlares impediment)
     {
-        if (_deflector == null) throw new NoNullAllowedException(nameof(_deflector));
+        if (_deflector is null) throw new BuildComponentCannotBeNull(nameof(_deflector));
         return _protectAntimatterFlares(_deflector, impediment);
     }
 
     public TProtectionResult Visit(CosmoWhales impediment)
     {
-        if (_deflector == null) throw new NoNullAllowedException(nameof(_deflector));
+        if (_deflector is null) throw new BuildComponentCannotBeNull(nameof(_deflector));
         return _protectCosmoWhales(_deflector, impediment);
     }
 }

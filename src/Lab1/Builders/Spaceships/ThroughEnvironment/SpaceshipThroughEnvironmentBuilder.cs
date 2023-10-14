@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Data;
 using Itmo.ObjectOrientedProgramming.Lab1.Dispatchers.Spaceships.ThroughEnvironment;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Environments;
 using Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
+using Itmo.ObjectOrientedProgramming.Lab1.Exceptions.Builders;
 using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Environments;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Builders.Spaceships.ThroughEnvironment;
@@ -25,12 +25,12 @@ public class SpaceshipThroughEnvironmentBuilder<TResult, TSpaceship> : ISpaceshi
         Dispatcher = dispatcher;
         _fly = fly;
 
-        _spaceFly = (a, b) => fly(a, b);
-        _nebulaeOfIncreasedDensityOfSpaceFly = (a, b) => fly(a, b);
-        _nebulaeOfNitrideParticlesFly = (a, b) => fly(a, b);
+        _spaceFly = (spaceship, environment) => fly(spaceship, environment);
+        _nebulaeOfIncreasedDensityOfSpaceFly = (spaceship, environment) => fly(spaceship, environment);
+        _nebulaeOfNitrideParticlesFly = (spaceship, environment) => fly(spaceship, environment);
     }
 
-    public SpaceshipThroughEnvironmentDispatcher<TResult> Dispatcher { get; }
+    private SpaceshipThroughEnvironmentDispatcher<TResult> Dispatcher { get; }
 
     public IEnvironmentVisitor<TResult> Spaceship(TSpaceship spaceship)
     {
@@ -63,19 +63,19 @@ public class SpaceshipThroughEnvironmentBuilder<TResult, TSpaceship> : ISpaceshi
 
     public TResult Visit(Space environment)
     {
-        if (_spaceship == null) throw new NoNullAllowedException(nameof(_spaceship));
+        if (_spaceship is null) throw new BuildComponentCannotBeNull(nameof(_spaceship));
         return _spaceFly(_spaceship, environment);
     }
 
     public TResult Visit(NebulaeOfIncreasedDensityOfSpace environment)
     {
-        if (_spaceship == null) throw new NoNullAllowedException(nameof(_spaceship));
+        if (_spaceship is null) throw new BuildComponentCannotBeNull(nameof(_spaceship));
         return _nebulaeOfIncreasedDensityOfSpaceFly(_spaceship, environment);
     }
 
     public TResult Visit(NebulaeOfNitrideParticles environment)
     {
-        if (_spaceship == null) throw new NoNullAllowedException(nameof(_spaceship));
+        if (_spaceship is null) throw new BuildComponentCannotBeNull(nameof(_spaceship));
         return _nebulaeOfNitrideParticlesFly(_spaceship, environment);
     }
 }
