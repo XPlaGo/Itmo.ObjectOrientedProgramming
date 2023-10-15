@@ -85,7 +85,7 @@ public class Test
     }
 
     [Fact]
-    public void Test4()
+    public void EnginesConsumptionTest()
     {
         var pathBuilder = new PathBuilder();
         pathBuilder.AddEnvironment(new Space(5, new List<IImpediment>()));
@@ -99,7 +99,7 @@ public class Test
     }
 
     [Fact]
-    public void Test5()
+    public void LengthOptimalTest()
     {
         var pathBuilder = new PathBuilder();
         pathBuilder.AddEnvironment(new NebulaeOfIncreasedDensityOfSpace(15, new List<IImpediment>()));
@@ -113,7 +113,7 @@ public class Test
     }
 
     [Fact]
-    public void Test6()
+    public void PathCompletedOptimalTest()
     {
         var pathBuilder = new PathBuilder();
         pathBuilder.AddEnvironment(new NebulaeOfNitrideParticles(5, new List<IImpediment>()));
@@ -127,7 +127,7 @@ public class Test
     }
 
     [Fact]
-    public void Test7()
+    public void MySpaceshipTest()
     {
         var pathBuilder = new PathBuilder();
         pathBuilder.AddEnvironment(
