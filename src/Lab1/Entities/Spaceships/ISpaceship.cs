@@ -10,14 +10,17 @@ namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
 public interface ISpaceship
 {
-    double CurrentVelocity { get; }
     ImpulseEngine? ImpulseEngine { get; }
     JumpEngine? JumpEngine { get; }
     IEmitter? Emitter { get; }
     IDeflector? Deflector { get; }
     IArmor? Armor { get; }
 
-    void UpdateVelocity(double value);
+    public void UpdateVelocity(double value)
+    {
+        ImpulseEngine?.UpdateVelocity(value);
+        JumpEngine?.UpdateVelocity(value);
+    }
 
     T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor);
     T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor);

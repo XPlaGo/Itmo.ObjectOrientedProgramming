@@ -9,7 +9,7 @@ using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Spaceship.ThroughEnvironment;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
-public class StellaSpaceship : Spaceship
+public class StellaSpaceship : ISpaceship
 {
     private const double VaclasSpaceshipOverallCharacteristics = 300;
     private const double VaclasSpaceshipDeflectorPoints = 300;
@@ -20,19 +20,19 @@ public class StellaSpaceship : Spaceship
         JumpEngine = new OmegaJumpEngine(jumpEngineInitialFuelLevel);
     }
 
-    public override ImpulseEngine ImpulseEngine { get; }
-    public override JumpEngine JumpEngine { get; }
-    public override IEmitter Emitter { get; } = new NoneEmitter();
-    public override IDeflector Deflector { get; } = new FirstClassDeflector(VaclasSpaceshipDeflectorPoints);
-    public override IArmor Armor { get; } = new FirstArmorClass(VaclasSpaceshipOverallCharacteristics);
+    public ImpulseEngine ImpulseEngine { get; }
+    public JumpEngine JumpEngine { get; }
+    public IEmitter Emitter { get; } = new NoneEmitter();
+    public IDeflector Deflector { get; } = new FirstClassDeflector(VaclasSpaceshipDeflectorPoints);
+    public IArmor Armor { get; } = new FirstArmorClass(VaclasSpaceshipOverallCharacteristics);
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);
     }
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);

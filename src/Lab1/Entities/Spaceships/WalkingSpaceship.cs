@@ -9,29 +9,30 @@ using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Spaceship.ThroughEnvironment;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
-public class WalkingSpaceship : Spaceship
+public class WalkingSpaceship : ISpaceship
 {
     private const double WalkingSpaceshipOverallCharacteristics = 100;
 
     public WalkingSpaceship(float impulseEngineInitialFuelLevel, double initialVelocity)
     {
         ImpulseEngine = new CImpulseEngine(impulseEngineInitialFuelLevel);
-        UpdateVelocity(initialVelocity);
+        ISpaceship spaceship = this;
+        spaceship.UpdateVelocity(initialVelocity);
     }
 
-    public override ImpulseEngine ImpulseEngine { get; }
-    public override JumpEngine JumpEngine { get; } = new NoneJumpEngine();
-    public override IEmitter Emitter { get; } = new NoneEmitter();
-    public override IDeflector Deflector { get; } = new NoneDeflector();
-    public override IArmor Armor { get; } = new FirstArmorClass(WalkingSpaceshipOverallCharacteristics);
+    public ImpulseEngine ImpulseEngine { get; }
+    public JumpEngine JumpEngine { get; } = new NoneJumpEngine();
+    public IEmitter Emitter { get; } = new NoneEmitter();
+    public IDeflector Deflector { get; } = new NoneDeflector();
+    public IArmor Armor { get; } = new FirstArmorClass(WalkingSpaceshipOverallCharacteristics);
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);
     }
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);

@@ -9,7 +9,7 @@ using Itmo.ObjectOrientedProgramming.Lab1.Visitors.Spaceship.ThroughEnvironment;
 
 namespace Itmo.ObjectOrientedProgramming.Lab1.Entities.Spaceships;
 
-public class MeridianSpaceship : Spaceship
+public class MeridianSpaceship : ISpaceship
 {
     private const double MeridianSpaceshipOverallCharacteristics = 200;
     private const double MeridianSpaceshipDeflectorPoints = 600;
@@ -19,19 +19,19 @@ public class MeridianSpaceship : Spaceship
         ImpulseEngine = new EImpulseEngine(impulseEngineInitialFuelLevel);
     }
 
-    public override ImpulseEngine ImpulseEngine { get; }
-    public override JumpEngine JumpEngine { get; } = new NoneJumpEngine();
-    public override IEmitter Emitter { get; } = new AntiNeutrinoEmitter();
-    public override IDeflector Deflector { get; } = new SecondClassDeflector(MeridianSpaceshipDeflectorPoints);
-    public override IArmor Armor { get; } = new SecondArmorClass(MeridianSpaceshipOverallCharacteristics);
+    public ImpulseEngine ImpulseEngine { get; }
+    public JumpEngine JumpEngine { get; } = new NoneJumpEngine();
+    public IEmitter Emitter { get; } = new AntiNeutrinoEmitter();
+    public IDeflector Deflector { get; } = new SecondClassDeflector(MeridianSpaceshipDeflectorPoints);
+    public IArmor Armor { get; } = new SecondArmorClass(MeridianSpaceshipOverallCharacteristics);
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipThroughEnvironmentVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);
     }
 
-    public override T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
+    public T AcceptSpaceshipVisitor<T>(ISpaceshipOnPathVisitor<T> throughEnvironmentVisitor)
     {
         ArgumentNullException.ThrowIfNull(throughEnvironmentVisitor);
         return throughEnvironmentVisitor.Visit(this);

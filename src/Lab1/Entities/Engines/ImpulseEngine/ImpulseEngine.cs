@@ -26,10 +26,8 @@ public abstract class ImpulseEngine : IEngine
         get => _fuelLevel;
         set
         {
-            if (value < 0)
-                throw new FuelException($"Fuel level value must be positive or 0, passed {value}");
-            if (value > ImpulseEngineFuelMaxLevel)
-                throw new FuelException($"Fuel level value must be less than max fuel level {ImpulseEngineFuelMaxLevel}");
+            if (value is < 0 or > ImpulseEngineFuelMaxLevel)
+                throw new FuelException(value, 0, ImpulseEngineFuelMaxLevel);
             _fuelLevel = value;
         }
     }

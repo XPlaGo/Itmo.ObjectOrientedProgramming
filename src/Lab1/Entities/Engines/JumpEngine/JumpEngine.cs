@@ -21,10 +21,8 @@ public abstract class JumpEngine : IEngine
         get => _fuelLevel;
         set
         {
-            if (value < 0)
-                throw new FuelException($"Fuel level value must be positive or 0, passed {value}");
-            if (value > JumpEngineFuelMaxLevel)
-                throw new FuelException($"Fuel level value must be less than max fuel level {JumpEngineFuelMaxLevel}");
+            if (value is < 0 or > JumpEngineFuelMaxLevel)
+                throw new FuelException(value, 0, JumpEngineFuelMaxLevel);
             _fuelLevel = value;
         }
     }
