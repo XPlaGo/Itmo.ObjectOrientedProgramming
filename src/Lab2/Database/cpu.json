@@ -1,0 +1,12 @@
+﻿[
+  {
+    "Id": {"Id": "sdlcjsdlkcmsldkc"},
+    "CorsFrequency": 12345,
+    "CorsNumber": 8,
+    "Socket": "sfljsd;lkcm",
+    "VideoCorePresence": true,
+    "SupportedMemoryVersions": ["adcas", "adcdc"],
+    "Tdp": 1.2,
+    "PowerConsumption": 10.5
+  }
+]
