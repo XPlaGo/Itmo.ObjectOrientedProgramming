@@ -4,4 +4,12 @@
         <RootNamespace>Itmo.ObjectOrientedProgramming.Lab3</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Entities\Endpoints\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="xunit.abstractions" />
+    </ItemGroup>
+
 </Project>
