@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Itmo.ObjectOrientedProgramming.Lab2.Documents;
 using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
@@ -43,23 +42,6 @@ public class Repository<TDocument> : IRepository<TDocument>
     public void Add(TDocument document)
     {
         _data.Add(document);
-    }
-
-    public TDocument? UpdateById(DocumentId id, CpuDocument newDocument)
-    {
-        ArgumentNullException.ThrowIfNull(newDocument);
-
-        TDocument? document =
-            (from doc in _data
-                where doc.Id.Equals(id)
-                select doc).FirstOrDefault();
-
-        /*if (document is not null)
-        {
-            document.Id = newDocument.Id;
-        }*/
-
-        return document;
     }
 
     public void Backup()
