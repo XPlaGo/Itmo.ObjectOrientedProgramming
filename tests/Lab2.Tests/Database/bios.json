@@ -1,0 +1,18 @@
+﻿[
+  {
+    "Id": {"Id": "12345"},
+    "Type": "UEFI",
+    "Version": "v2.0",
+    "CpuSupportedList": [
+      {"Id": {"Id": "67890"}}
+    ]
+  },
+  {
+    "Id": {"Id": "12346"},
+    "Type": "UEFI",
+    "Version": "v2.1",
+    "CpuSupportedList": [
+      {"Id": {"Id": "67891"}}
+    ]
+  }
+]

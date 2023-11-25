@@ -1,0 +1,22 @@
+[
+  {
+    "Id": {"Id": "67890"},
+    "CorsFrequency": 3200,
+    "CorsNumber": 8,
+    "Socket": "AM4",
+    "VideoCorePresence": true,
+    "SupportedMemoryVersions": ["DDR4"],
+    "Tdp": 65.5,
+    "PowerConsumption": 95.2
+  },
+  {
+    "Id": {"Id": "67891"},
+    "CorsFrequency": 4800,
+    "CorsNumber": 12,
+    "Socket": "LGA1700",
+    "VideoCorePresence": false,
+    "SupportedMemoryVersions": ["DDR5"],
+    "Tdp": 105.5,
+    "PowerConsumption": 125.2
+  }
+]

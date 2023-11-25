@@ -1,14 +1,12 @@
-﻿using Itmo.ObjectOrientedProgramming.Lab2.Documents;
-using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
+﻿using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
 
 namespace Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentRefs;
 
-public class DocumentRef<T>
-    where T : IDocument
+public class DocumentRef
 {
-    public DocumentRef(DocumentId documentId)
+    public DocumentRef(DocumentId id)
     {
-        Id = documentId;
+        Id = id;
     }
 
     public DocumentId Id { get; set; }

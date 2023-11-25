@@ -1,4 +1,5 @@
-﻿using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
+﻿using System;
+using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
 
 namespace Itmo.ObjectOrientedProgramming.Lab2.Documents;
 
@@ -15,11 +16,33 @@ public class VideoCardDocument : IDocument
         PowerConsumption = powerConsumption;
     }
 
-    public DocumentId Id { get; set; }
-    public float Height { get; set; }
-    public float Width { get; set; }
-    public long VideoMemory { get; set; }
-    public string PcieVersion { get; set; }
-    public long Frequency { get; set; }
-    public float PowerConsumption { get; set; }
+    public DocumentId Id { get; init; }
+    public float Height { get; init; }
+    public float Width { get; init; }
+    public long VideoMemory { get; init; }
+    public string PcieVersion { get; init; }
+    public long Frequency { get; init; }
+    public float PowerConsumption { get; init; }
+
+    public static VideoCardDocument CopyWith(
+        VideoCardDocument other,
+        DocumentId? id = null,
+        float? height = null,
+        float? width = null,
+        long? videoMemory = null,
+        string? pcieVersion = null,
+        long? frequency = null,
+        float? powerConsumption = null)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        return new VideoCardDocument(
+            id ?? other.Id,
+            height ?? other.Height,
+            width ?? other.Width,
+            videoMemory ?? other.VideoMemory,
+            pcieVersion ?? other.PcieVersion,
+            frequency ?? other.Frequency,
+            powerConsumption ?? other.PowerConsumption);
+    }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Itmo.ObjectOrientedProgramming.Lab2.Exceptions.Builder;
+﻿using System;
+using System.Collections.Generic;
 using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
 using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentRefs;
 
@@ -11,7 +11,7 @@ public class BiosDocument : IDocument
         DocumentId id,
         string type,
         string version,
-        IReadOnlyList<DocumentRef<CpuDocument>> cpuSupportedList)
+        IReadOnlyList<DocumentRef> cpuSupportedList)
     {
         Id = id;
         Type = type;
@@ -19,54 +19,24 @@ public class BiosDocument : IDocument
         CpuSupportedList = cpuSupportedList;
     }
 
-    public DocumentId Id { get; set; }
-    public string Type { get; set; }
-    public string Version { get; set; }
-    public IReadOnlyList<DocumentRef<CpuDocument>> CpuSupportedList { get; set; }
+    public DocumentId Id { get; init; }
+    public string Type { get; init; }
+    public string Version { get; init; }
+    public IReadOnlyList<DocumentRef> CpuSupportedList { get; init; }
 
-    internal class BiosDocumentBuilder
+    public static BiosDocument CopyWith(
+        BiosDocument other,
+        DocumentId? id = null,
+        string? type = null,
+        string? version = null,
+        IReadOnlyList<DocumentRef>? cpuSupportedList = null)
     {
-        private DocumentId? Id { get; set; }
-        private string? Type { get; set; }
-        private string? Version { get; set; }
-        private IReadOnlyList<DocumentRef<CpuDocument>>? CpuSupportedList { get; set; }
+        ArgumentNullException.ThrowIfNull(other);
 
-        public BiosDocumentBuilder WithId(DocumentId id)
-        {
-            Id = id;
-            return this;
-        }
-
-        public BiosDocumentBuilder WithType(string type)
-        {
-            Type = type;
-            return this;
-        }
-
-        public BiosDocumentBuilder WithVersion(string version)
-        {
-            Version = version;
-            return this;
-        }
-
-        public BiosDocumentBuilder WithCpuSupportedList(IReadOnlyList<DocumentRef<CpuDocument>> cpuSupportedList)
-        {
-            CpuSupportedList = cpuSupportedList;
-            return this;
-        }
-
-        public BiosDocument Build()
-        {
-            if (Id is null) throw new BuilderNullComponentException(nameof(Id));
-            if (Type is null) throw new BuilderNullComponentException(nameof(Type));
-            if (Version is null) throw new BuilderNullComponentException(nameof(Version));
-            if (CpuSupportedList is null) throw new BuilderNullComponentException(nameof(CpuSupportedList));
-
-            return new BiosDocument(
-                Id,
-                Type,
-                Version,
-                CpuSupportedList);
-        }
+        return new BiosDocument(
+            id ?? other.Id,
+            type ?? other.Type,
+            version ?? other.Version,
+            cpuSupportedList ?? other.CpuSupportedList);
     }
 }

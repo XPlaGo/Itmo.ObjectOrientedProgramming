@@ -11,15 +11,16 @@ public static class PcAssemblyValidator
     public static void Validate(
         BiosDocument bios,
         CpuDocument cpu,
-        HddDocument hdd,
+        HddDocument? hdd,
         MotherboardDocument motherboard,
         PcCaseDocument pcCase,
         PowerUnitDocument powerUnit,
         ProcessorCoolingSystemDocument processorCoolingSystem,
         RamDocument ram,
-        SsdDocument ssd,
+        SsdDocument? ssd,
         VideoCardDocument videoCard,
-        XmpDocument xmp)
+        XmpDocument xmp,
+        WifiAdapterDocument? wifiAdapter)
     {
         ValidatePowerConsumption(cpu, hdd, ssd, videoCard, powerUnit);
         ValidateCpuSocket(cpu, motherboard, processorCoolingSystem);
@@ -28,22 +29,31 @@ public static class PcAssemblyValidator
         ValidateBios(cpu, motherboard, bios);
         ValidatePcCase(videoCard, pcCase, motherboard);
         ValidateXmp(xmp, motherboard, cpu);
+        ValidateWifiAdapter(motherboard, wifiAdapter);
+    }
+
+    private static void ValidateWifiAdapter(
+        MotherboardDocument motherboardDocument,
+        WifiAdapterDocument? wifiAdapterDocument)
+    {
+        ArgumentNullException.ThrowIfNull(motherboardDocument);
+
+        if (motherboardDocument.HasBuiltinWifiAdapter && wifiAdapterDocument is not null)
+            throw new PcAssemblyValidatorException("Motherboard has built-in wifi adapter");
     }
 
     private static void ValidatePowerConsumption(
         CpuDocument cpu,
-        HddDocument hdd,
-        SsdDocument ssd,
+        HddDocument? hdd,
+        SsdDocument? ssd,
         VideoCardDocument videoCard,
         PowerUnitDocument powerUnit)
     {
         ArgumentNullException.ThrowIfNull(cpu);
-        ArgumentNullException.ThrowIfNull(hdd);
-        ArgumentNullException.ThrowIfNull(ssd);
         ArgumentNullException.ThrowIfNull(videoCard);
         ArgumentNullException.ThrowIfNull(powerUnit);
 
-        if (cpu.PowerConsumption + hdd.PowerConsumption + ssd.PowerConsumption +
+        if (cpu.PowerConsumption + (hdd?.PowerConsumption ?? 0) + (ssd?.PowerConsumption ?? 0) +
             videoCard.PowerConsumption > powerUnit.MaxLoad)
         {
             throw new PcAssemblyValidatorException("Power consumption is more than power unit max load");
@@ -150,6 +160,7 @@ public static class PcAssemblyValidator
     {
         ArgumentNullException.ThrowIfNull(videoCardDocument);
         ArgumentNullException.ThrowIfNull(pcCaseDocument);
+        ArgumentNullException.ThrowIfNull(motherboardDocument);
 
         if (videoCardDocument.Height > pcCaseDocument.MaxVideoCardHeight ||
             videoCardDocument.Width > pcCaseDocument.MaxVideoCardWidth)
@@ -158,7 +169,7 @@ public static class PcAssemblyValidator
         }
 
         int supportFormFactorCount = (
-            from formFactor in pcCaseDocument.SupportedVideoCardsFormFactors
+            from formFactor in pcCaseDocument.SupportedMotherboardFormFactors
             where formFactor == motherboardDocument.FormFactor
             select formFactor).Count();
 
@@ -177,7 +188,7 @@ public static class PcAssemblyValidator
         ArgumentNullException.ThrowIfNull(motherboardDocument);
         ArgumentNullException.ThrowIfNull(cpuDocument);
 
-        if (xmpDocument.Frequency > cpuDocument.CorsFrequency)
+        if (xmpDocument.Frequency != cpuDocument.CorsFrequency)
         {
             throw new PcAssemblyValidatorException("CPU don't support XMP frequency");
         }

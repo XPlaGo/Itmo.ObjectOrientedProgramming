@@ -1,0 +1,14 @@
+﻿[
+  {
+    "Id": {"Id": "54321"},
+    "Timings": "CL16-18-18-36",
+    "Voltage": 1.35,
+    "Frequency": 3200
+  },
+  {
+    "Id": {"Id": "54322"},
+    "Timings": "CL18-20-20-40",
+    "Voltage": 1.5,
+    "Frequency": 4800
+  }
+]

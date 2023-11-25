@@ -1,0 +1,14 @@
+﻿[
+  {
+    "Id": {"Id": "24680"},
+    "Volume": 2000,
+    "MaxRotationSpeed": 5400,
+    "PowerConsumption": 7.2
+  },
+  {
+    "Id": {"Id": "13579"},
+    "Volume": 4000,
+    "MaxRotationSpeed": 7200,
+    "PowerConsumption": 8.5
+  }
+]

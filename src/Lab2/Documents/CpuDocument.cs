@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Itmo.ObjectOrientedProgramming.Lab2.Exceptions.Builder;
+﻿using System;
+using System.Collections.Generic;
 using Itmo.ObjectOrientedProgramming.Lab2.Models.DocumentIds;
 
 namespace Itmo.ObjectOrientedProgramming.Lab2.Documents;
@@ -26,110 +26,36 @@ public class CpuDocument : IDocument
         PowerConsumption = powerConsumption;
     }
 
-    public CpuDocument(
-        string id,
-        long corsFrequency,
-        int corsNumber,
-        string socket,
-        bool videoCorePresence,
-        IReadOnlyList<string> supportedMemoryVersions,
-        long tdp,
-        int powerConsumption)
-        : this(
-            new DocumentId(id),
-            corsFrequency,
-            corsNumber,
-            socket,
-            videoCorePresence,
-            supportedMemoryVersions,
-            tdp,
-            powerConsumption)
+    public DocumentId Id { get; init; }
+    public long CorsFrequency { get; init; }
+    public int CorsNumber { get; init; }
+    public string Socket { get; init; }
+    public bool VideoCorePresence { get; init; }
+    public IReadOnlyList<string> SupportedMemoryVersions { get; init; }
+    public float Tdp { get; init; }
+    public float PowerConsumption { get; init; }
+
+    public static CpuDocument CopyWith(
+        CpuDocument other,
+        DocumentId? id = null,
+        long? corsFrequency = null,
+        int? corsNumber = null,
+        string? socket = null,
+        bool? videoCorePresence = null,
+        IReadOnlyList<string>? supportedMemoryVersions = null,
+        float? tdp = null,
+        float? powerConsumption = null)
     {
-    }
+        ArgumentNullException.ThrowIfNull(other);
 
-    public DocumentId Id { get; set; }
-    public long CorsFrequency { get; set; }
-    public int CorsNumber { get; set; }
-    public string Socket { get; set; }
-    public bool VideoCorePresence { get; set; }
-    public IReadOnlyList<string> SupportedMemoryVersions { get; set; }
-    public float Tdp { get; set; }
-    public float PowerConsumption { get; set; }
-
-    internal class CpuDocumentBuilder
-    {
-        private DocumentId? _id;
-        private long _corsFrequency;
-        private int _corsNumber;
-        private string? _socket;
-        private bool _videoCorePresence;
-        private IReadOnlyList<string>? _supportedMemoryFrequencies;
-        private float _tdp;
-        private int _powerConsumption;
-
-        public CpuDocumentBuilder Id(string id)
-        {
-            _id = new DocumentId(id);
-            return this;
-        }
-
-        public CpuDocumentBuilder CorsFrequency(long corsFrequency)
-        {
-            this._corsFrequency = corsFrequency;
-            return this;
-        }
-
-        public CpuDocumentBuilder CorsNumber(int corsNumber)
-        {
-            this._corsNumber = corsNumber;
-            return this;
-        }
-
-        public CpuDocumentBuilder Socket(string socket)
-        {
-            this._socket = socket;
-            return this;
-        }
-
-        public CpuDocumentBuilder VideoCorePresence(bool videoCorePresence)
-        {
-            this._videoCorePresence = videoCorePresence;
-            return this;
-        }
-
-        public CpuDocumentBuilder SupportedMemoryFrequencies(IReadOnlyList<string> supportedMemoryFrequencies)
-        {
-            this._supportedMemoryFrequencies = supportedMemoryFrequencies;
-            return this;
-        }
-
-        public CpuDocumentBuilder Tdp(float tdp)
-        {
-            this._tdp = tdp;
-            return this;
-        }
-
-        public CpuDocumentBuilder PowerConsumption(int powerConsumption)
-        {
-            _powerConsumption = powerConsumption;
-            return this;
-        }
-
-        public CpuDocument Build()
-        {
-            if (_id is null) throw new BuilderNullComponentException(nameof(_id));
-            if (_socket is null) throw new BuilderNullComponentException(nameof(_socket));
-            if (_supportedMemoryFrequencies is null) throw new BuilderNullComponentException(nameof(_supportedMemoryFrequencies));
-
-            return new CpuDocument(
-                _id,
-                _corsFrequency,
-                _corsNumber,
-                _socket,
-                _videoCorePresence,
-                _supportedMemoryFrequencies,
-                _tdp,
-                _powerConsumption);
-        }
+        return new CpuDocument(
+            id ?? other.Id,
+            corsFrequency ?? other.CorsFrequency,
+            corsNumber ?? other.CorsNumber,
+            socket ?? other.Socket,
+            videoCorePresence ?? other.VideoCorePresence,
+            supportedMemoryVersions ?? other.SupportedMemoryVersions,
+            tdp ?? other.Tdp,
+            powerConsumption ?? other.PowerConsumption);
     }
 }

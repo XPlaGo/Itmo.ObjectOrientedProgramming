@@ -4,5 +4,5 @@ namespace Itmo.ObjectOrientedProgramming.Lab2.Documents;
 
 public interface IDocument
 {
-    public DocumentId Id { get; set; }
+    public DocumentId Id { get; init; }
 }

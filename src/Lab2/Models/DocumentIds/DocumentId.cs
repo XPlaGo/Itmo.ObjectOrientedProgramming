@@ -9,7 +9,7 @@ public class DocumentId
         Id = id;
     }
 
-    public string Id { get; set; }
+    public string Id { get; }
 
     public override int GetHashCode()
     {
@@ -20,9 +20,7 @@ public class DocumentId
     {
         ArgumentNullException.ThrowIfNull(obj);
 
-        var otherId = obj as DocumentId;
-
-        if (otherId == null) return false;
+        if (obj is not DocumentId otherId) return false;
         return Id == otherId.Id;
     }
 }

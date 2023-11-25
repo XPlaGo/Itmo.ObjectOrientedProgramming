@@ -1,0 +1,20 @@
+﻿[
+  {
+    "Id": {"Id": "11223"},
+    "Height": 120,
+    "Width": 40,
+    "VideoMemory": 8,
+    "PcieVersion": "PCIe 4.0",
+    "Frequency": 1750,
+    "PowerConsumption": 185
+  },
+  {
+    "Id": {"Id": "11224"},
+    "Height": 150,
+    "Width": 50,
+    "VideoMemory": 12,
+    "PcieVersion": "PCIe 5.0",
+    "Frequency": 2000,
+    "PowerConsumption": 250
+  }
+]

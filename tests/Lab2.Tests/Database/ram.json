@@ -1,0 +1,21 @@
+﻿[
+  {
+    "Id": {"Id": "77889"},
+    "Volume": 16,
+    "SupportedJedecAndVoltageFrequencyPairs": ["3200MHz CL16 1.35V"],
+    "SupportedXmpProfiles": ["XMP 2.0"],
+    "FormFactor": "DIMM",
+    "DdrVersion": "DDR4",
+    "PowerConsumption": 5
+  },
+  {
+    "Id": {"Id": "77888"},
+    "Volume": 32,
+    "SupportedJedecAndVoltageFrequencyPairs": ["4800MHz CL18 1.5V"],
+    "SupportedXmpProfiles": ["XMP 3.0"],
+    "FormFactor": "DIMM",
+    "DdrVersion": "DDR5",
+    "PowerConsumption": 7.5
+  }
+
+]
