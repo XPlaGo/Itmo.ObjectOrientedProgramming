@@ -67,5 +67,12 @@ public class Test
         ICommandHandler commandHandler = new CommandHandlersFabrics().GetDefault();
 
         _testOutputHelper.WriteLine(commandHandler.HandleCommand("tree list 2", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("file move dir1/test3.txt dir2", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("tree list 2", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("file delete /dir2/test3.txt", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("tree list 2", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("file copy /dir2/test5.txt /dir1", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("tree list 2", receiver));
+        _testOutputHelper.WriteLine(commandHandler.HandleCommand("file show /dir1/test5.txt", receiver));
     }
 }

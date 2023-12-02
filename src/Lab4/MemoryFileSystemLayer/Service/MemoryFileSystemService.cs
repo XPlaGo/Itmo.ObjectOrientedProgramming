@@ -67,7 +67,7 @@ public class MemoryFileSystemService : IFileSystemService<string>
                 fileFormat.Equals(file.Format, StringComparison.Ordinal))
             {
                 parentDirectory.Files.Remove(file);
-                return $"File {path} was deleted";
+                return $"File {path.Data} was deleted";
             }
         }
 
@@ -100,7 +100,7 @@ public class MemoryFileSystemService : IFileSystemService<string>
 
                 IDirectory toDirectory = GetDirectory(toPath, currentDirectory, rootDirectory);
                 toDirectory.Files.Add(file);
-                return $"File {fromPath} was moved to {toPath}";
+                return $"File {fromPath.Data} was moved to {toPath.Data}";
             }
         }
 
