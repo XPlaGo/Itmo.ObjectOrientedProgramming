@@ -1,0 +1,33 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "CurrencyConversion";
+
+package currency_conversion;
+
+service ConversionServiceProto {
+  rpc Convert (ConversionRequestProto) returns (ConversionResultProto);
+}
+
+message ConversionRequestProto {
+  int64 fromCurrencyCode = 1;
+  int64 toCurrencyCode = 2;
+  DecimalProto amount = 3;
+}
+
+message ConversionResultProto {
+  repeated string messages = 1;
+  bool success = 2;
+  optional ConversionResponseProto data = 3;
+}
+
+message ConversionResponseProto {
+  DecimalProto fromAmount = 1;
+  DecimalProto toAmount = 2;
+}
+
+message DecimalProto {
+  sint32 v1 = 1;
+  sint32 v2 = 2;
+  sint32 v3 = 3;
+  sint32 v4 = 4;
+}

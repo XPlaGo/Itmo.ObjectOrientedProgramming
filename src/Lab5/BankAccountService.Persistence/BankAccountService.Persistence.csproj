@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Itmo.Dev.Platform.Postgres" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BankAccountService.Application\BankAccountService.Application.csproj" />
+      <ProjectReference Include="..\BankAccountService.Domain\BankAccountService.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

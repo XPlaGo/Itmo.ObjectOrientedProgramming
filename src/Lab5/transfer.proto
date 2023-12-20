@@ -1,0 +1,39 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Transfer";
+
+package transfer;
+
+service TransferServiceProto {
+  rpc TransferCardToCard(TransferRequestProto) returns (TransferResultProto);
+  rpc TransferCardToSavings(TransferRequestProto) returns (TransferResultProto);
+  rpc TransferCardToDeposit(TransferRequestProto) returns (TransferResultProto);
+  rpc TransferSavingsToCard(TransferRequestProto) returns (TransferResultProto);
+  rpc TransferDepositToCard(TransferRequestProto) returns (TransferResultProto);
+}
+
+message TransferRequestProto {
+  int64 fromAccountId = 1;
+  int64 fromUserID = 2;
+  int64 toAccountId = 3;
+  int64 toUserID = 4;
+  DecimalProto amount = 5;
+}
+
+message TransferResultProto {
+  repeated string messages = 1;
+  bool success = 2;
+  optional TransferResponseProto data = 3;
+}
+
+message TransferResponseProto {
+  DecimalProto transferredFromAmount = 1;
+  DecimalProto transferredToAmount = 2;
+}
+
+message DecimalProto {
+  sint32 v1 = 1;
+  sint32 v2 = 2;
+  sint32 v3 = 3;
+  sint32 v4 = 4;
+}
