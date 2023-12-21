@@ -22,8 +22,6 @@ public interface IResultFactory
 
     public Result<T> Failure<T>(T data, IReadOnlyList<string> messages);
 
-    public Result<T> Failure<T>(Exception exception);
-
     public Task<Result<T>> SuccessAsync<T>();
 
     public Task<Result<T>> SuccessAsync<T>(string message);
@@ -43,6 +41,4 @@ public interface IResultFactory
     public Task<Result<T>> FailureAsync<T>(T data, string message);
 
     public Task<Result<T>> FailureAsync<T>(T data, IReadOnlyList<string> messages);
-
-    public Task<Result<T>> FailureAsync<T>(Exception exception);
 }

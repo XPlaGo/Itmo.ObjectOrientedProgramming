@@ -15,7 +15,7 @@ builder.Services.AddPersistenceLayer(configuration =>
     configuration.Host = Environment.GetEnvironmentVariable("PGHOST") ?? "localhost";
     configuration.Port = int.Parse(Environment.GetEnvironmentVariable("PGPORT") ?? "5432", ci);
     configuration.Username = Environment.GetEnvironmentVariable("PGUSER") ?? "postgres";
-    configuration.Password = Environment.GetEnvironmentVariable("PGPASSWORD") ?? "tAnk11xY";
+    configuration.Password = Environment.GetEnvironmentVariable("PGPASSWORD") ?? "postgres";
     configuration.Database = Environment.GetEnvironmentVariable("PGDBNAME") ?? "lab5";
     configuration.SslMode = "Prefer";
 });

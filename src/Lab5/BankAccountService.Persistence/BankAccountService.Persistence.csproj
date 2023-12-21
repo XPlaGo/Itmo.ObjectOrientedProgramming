@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="Itmo.Dev.Platform.Postgres" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,8 +1,6 @@
-﻿using BankAccountService.Domain.Common;
+﻿namespace BankAccountService.Domain.Entities;
 
-namespace BankAccountService.Domain.Entities;
-
-public class SavingsAccount : BaseMetaInfoEntity
+public class SavingsAccount : Account
 {
     public SavingsAccount(
         long id,
@@ -19,8 +17,4 @@ public class SavingsAccount : BaseMetaInfoEntity
         UpdatedDate = updatedDate;
         CurrencyCode = currencyCode;
     }
-
-    public decimal Amount { get; set; }
-    public long UserId { get; set; }
-    public long CurrencyCode { get; set; }
 }

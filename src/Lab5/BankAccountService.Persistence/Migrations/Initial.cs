@@ -11,31 +11,31 @@ public class Initial : SqlMigration
         create table card_accounts
         (
             id bigint primary key generated always as identity,
-            amount decimal,
-            user_id bigint,
-            currency_code bigint,
-            created_date timestamp,
-            updated_date timestamp
+            amount decimal not null,
+            user_id bigint not null,
+            currency_code bigint not null,
+            created_date timestamp not null,
+            updated_date timestamp not null
         );
 
         create table savings_accounts
         (
             id bigint primary key generated always as identity,
-            amount decimal,
-            user_id bigint,
-            currency_code bigint,
-            created_date timestamp,
-            updated_date timestamp
+            amount decimal not null,
+            user_id bigint not null,
+            currency_code bigint not null,
+            created_date timestamp not null,
+            updated_date timestamp not null
         );
 
         create table deposit_accounts
         (
             id bigint primary key generated always as identity,
-            amount decimal,
-            user_id bigint,
-            currency_code bigint,
-            created_date timestamp,
-            updated_date timestamp
+            amount decimal not null,
+            user_id bigint not null,
+            currency_code bigint not null,
+            created_date timestamp not null,
+            updated_date timestamp not null
         );
 
         insert into card_accounts (amount, user_id, currency_code, created_date, updated_date)

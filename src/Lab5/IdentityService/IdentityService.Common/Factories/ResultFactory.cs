@@ -95,15 +95,6 @@ public class ResultFactory : IResultFactory
         };
     }
 
-    public Result<T> Failure<T>(Exception exception)
-    {
-        return new Result<T>
-        {
-            Succeeded = false,
-            Exception = exception,
-        };
-    }
-
     public Task<Result<T>> SuccessAsync<T>()
     {
         return Task.FromResult(Success<T>());
@@ -152,10 +143,5 @@ public class ResultFactory : IResultFactory
     public Task<Result<T>> FailureAsync<T>(T data, IReadOnlyList<string> messages)
     {
         return Task.FromResult(Failure(data, messages));
-    }
-
-    public Task<Result<T>> FailureAsync<T>(Exception exception)
-    {
-        return Task.FromResult(Failure<T>(exception));
     }
 }

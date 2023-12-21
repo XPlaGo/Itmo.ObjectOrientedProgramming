@@ -23,11 +23,11 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     [HttpPost]
     [Route("signin")]
-    public async Task<ActionResult<Result<SignInTokenDto>>> Signin(SignInCommand signInCommand)
+    public async Task<ActionResult<Result<SignInTokenDto>>> Signin([FromBody] SignInCommand signInCommand)
     {
         Result<SignInTokenDto> result = await _signIn.Handle(signInCommand, default).ConfigureAwait(false);
 
-        if (result.Data is null && result.Messages is not null) return BadRequest(result.Messages);
+        if (result.Succeeded is false) return BadRequest(result);
 
         return result;
     }
@@ -35,11 +35,11 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     [HttpPost]
     [Route("signup")]
-    public async Task<ActionResult<Result<SignUpTokenDto>>> SignUp(SignUpCommand signUpCommand)
+    public async Task<ActionResult<Result<SignUpTokenDto>>> SignUp([FromBody] SignUpCommand signUpCommand)
     {
         Result<SignUpTokenDto> result = await _signUp.Handle(signUpCommand, default).ConfigureAwait(false);
 
-        if (result.Data is null && result.Messages is not null) return BadRequest(result.Messages);
+        if (result.Succeeded is false) return BadRequest(result);
 
         return result;
     }

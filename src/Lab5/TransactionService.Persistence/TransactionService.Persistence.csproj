@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Itmo.Dev.Platform.Postgres" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TransactionService.Application\TransactionService.Application.csproj" />
+      <ProjectReference Include="..\TransactionService.Common\TransactionService.Common.csproj" />
+      <ProjectReference Include="..\TransactionService.Domain\TransactionService.Domain.csproj" />
+      <ProjectReference Include="..\TransactionService.Infrastructure\TransactionService.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

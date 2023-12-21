@@ -11,12 +11,19 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
       <PackageReference Include="Grpc.AspNetCore" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     </ItemGroup>
 
     <ItemGroup>
         <Protobuf Include="..\conversion.proto" GrpcServices="Client">
             <Link>Protos\conversion.proto</Link>
+        </Protobuf>
+        <Protobuf Include="..\transaction.proto" GrpcServices="Client">
+            <Link>Protos\transaction.proto</Link>
         </Protobuf>
     </ItemGroup>
 </Project>

@@ -33,8 +33,4 @@
             <Link>Protos\transfer.proto</Link>
         </Protobuf>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
 </Project>

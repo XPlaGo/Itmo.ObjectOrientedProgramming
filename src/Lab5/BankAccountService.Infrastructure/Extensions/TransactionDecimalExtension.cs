@@ -1,10 +1,10 @@
-﻿using CurrencyConversion;
+﻿using Transaction;
 
 namespace BankAccountService.Infrastructure.Extensions;
 
-public static class DecimalExtension
+public static class TransactionDecimalExtension
 {
-    public static DecimalProto ConvertToDecimalProto(this decimal value)
+    public static DecimalProto ConvertToTransactionDecimalProto(this decimal value)
     {
         int[] bits = decimal.GetBits(value);
         return new DecimalProto

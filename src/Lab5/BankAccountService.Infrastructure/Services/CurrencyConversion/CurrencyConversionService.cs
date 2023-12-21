@@ -1,47 +1,66 @@
 ﻿using BankAccountService.Application.Interfaces.Services;
 using BankAccountService.Application.Models.CurrencyConversion;
 using BankAccountService.Common;
+using BankAccountService.Common.Factories;
 using BankAccountService.Infrastructure.Extensions;
+using BankAccountService.Infrastructure.Services.JWT;
 using CurrencyConversion;
+using Grpc.Core;
 using Grpc.Net.Client;
-using IdentityService.Extensions;
 
 namespace BankAccountService.Infrastructure.Services.CurrencyConversion;
 
 public class CurrencyConversionService : ICurrencyConversionService
 {
-    private readonly string _grpcServerHost;
+    private readonly GrpcServicesSettings _settings;
+    private readonly IAuthTokenService _tokenService;
 
-    public CurrencyConversionService(string grpcServerHost)
+    public CurrencyConversionService(GrpcServicesSettings settings, IAuthTokenService tokenService)
     {
-        _grpcServerHost = grpcServerHost;
+        _settings = settings;
+        _tokenService = tokenService;
     }
 
     public async Task<Result<CurrencyConversionResponse>> Convert(CurrencyConversionRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
-
-        using var channel = GrpcChannel.ForAddress(_grpcServerHost);
-        var client = new ConversionServiceProto.ConversionServiceProtoClient(channel);
-
-        var conversionRequest = new ConversionRequestProto
+        try
         {
-            FromCurrencyCode = request.FromCurrencyCode,
-            ToCurrencyCode = request.ToCurrencyCode,
-            Amount = request.Amount.ConvertToDecimalProto(),
-        };
+            ArgumentNullException.ThrowIfNull(request);
 
-        ConversionResultProto response = await client.ConvertAsync(conversionRequest).ConfigureAwait(false);
+            string jwtToken =
+                await _tokenService.GenerateInternalAccessToken("BankAccountService").ConfigureAwait(false);
 
-        CurrencyConversionResponse? data = response.Data?.FromAmount is null || response.Data?.ToAmount is null
-            ? null
-            : new CurrencyConversionResponse(
-                response.Data.FromAmount.ConvertToDecimal(),
-                response.Data.ToAmount.ConvertToDecimal());
+            using var channel = GrpcChannel.ForAddress(_settings.CurrencyServiceAddress);
+            var client = new ConversionServiceProto.ConversionServiceProtoClient(channel);
 
-        return new Result<CurrencyConversionResponse>(
-            response.Messages.ToList(),
-            response.Success,
-            data);
+            var conversionRequest = new ConversionRequestProto
+            {
+                FromCurrencyCode = request.FromCurrencyCode,
+                ToCurrencyCode = request.ToCurrencyCode,
+                Amount = request.Amount.ConvertToCurrencyDecimalProto(),
+            };
+
+            var headers = new Metadata { { "Authorization", $"Bearer {jwtToken}" } };
+
+            ConversionResultProto response =
+                await client.ConvertAsync(conversionRequest, headers).ConfigureAwait(false);
+
+            CurrencyConversionResponse? data = response.Data?.FromAmount is null || response.Data?.ToAmount is null
+                ? null
+                : new CurrencyConversionResponse(
+                    response.Data.FromAmount.ConvertToDecimal(),
+                    response.Data.ToAmount.ConvertToDecimal());
+
+            return new Result<CurrencyConversionResponse>(
+                response.Messages.ToList(),
+                response.Success,
+                data);
+        }
+        catch (RpcException exception)
+        {
+            return await new ResultFactory()
+                .FailureAsync<CurrencyConversionResponse>(exception.Message)
+                .ConfigureAwait(false);
+        }
     }
 }

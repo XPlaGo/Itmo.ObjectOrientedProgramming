@@ -1,8 +1,8 @@
 ﻿using CurrencyConversion;
 
-namespace IdentityService.Extensions;
+namespace BankAccountService.Infrastructure.Extensions;
 
-public static class DecimalProtoExtensions
+public static class CurrencyDecimalProtoExtensions
 {
     public static decimal ConvertToDecimal(this DecimalProto value)
     {

@@ -3,18 +3,20 @@ using CurrencyService.Application.Features.CurrencyExchanges.Conversion;
 using CurrencyService.Common;
 using CurrencyService.Extensions;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CurrencyService.Services;
 
-public class ConversionService : ConversionServiceProto.ConversionServiceProtoBase
+public class GrpcConversionService : ConversionServiceProto.ConversionServiceProtoBase
 {
     private readonly ConversionCommandHandler _conversion;
 
-    public ConversionService(ConversionCommandHandler conversion)
+    public GrpcConversionService(ConversionCommandHandler conversion)
     {
         _conversion = conversion;
     }
 
+    [Authorize(Roles = "Internal,Admin")]
     public override async Task<ConversionResultProto> Convert(ConversionRequestProto request, ServerCallContext context)
     {
         ArgumentNullException.ThrowIfNull(request);

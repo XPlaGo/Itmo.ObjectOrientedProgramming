@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankAccountService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TransferController : ControllerBase
 {
     private readonly CardToCardTransferCommandHandler _cardToCardTransfer;
@@ -32,7 +32,7 @@ public class TransferController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("cardToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToCard(TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToCard([FromBody] TransferCommand request)
     {
         Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
         if (result.Succeeded is false) return BadRequest(result);
@@ -42,7 +42,7 @@ public class TransferController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("cardToSaving")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToSaving(TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToSaving([FromBody] TransferCommand request)
     {
         Result<TransferResponse> result = await _cardToSavingsTransfer.Handle(request, default).ConfigureAwait(false);
         if (result.Succeeded is false) return BadRequest(result);
@@ -52,7 +52,7 @@ public class TransferController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("cardToDeposit")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToDeposit(TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToDeposit([FromBody] TransferCommand request)
     {
         Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
         if (result.Succeeded is false) return BadRequest(result);
@@ -62,7 +62,7 @@ public class TransferController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("depositToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferDepositToCard(TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferDepositToCard([FromBody] TransferCommand request)
     {
         Result<TransferResponse> result = await _depositToCardTransfer.Handle(request, default).ConfigureAwait(false);
         if (result.Succeeded is false) return BadRequest(result);
@@ -72,7 +72,7 @@ public class TransferController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("savingsToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferSavingsToCard(TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferSavingsToCard([FromBody] TransferCommand request)
     {
         Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
         if (result.Succeeded is false) return BadRequest(result);

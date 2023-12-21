@@ -1,4 +1,4 @@
-namespace BankAccountService;
+namespace TransactionService;
 
 public class WeatherForecast
 {

@@ -1,0 +1,42 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Transaction";
+
+package transaction;
+
+service TransactionServiceProto {
+  rpc Create (TransactionRequestProto) returns (TransactionTokenResultProto);
+  rpc Update (TransactionRequestProto) returns (TransactionTokenResultProto);
+  rpc Delete (TransactionTokenRequestProto) returns (TransactionTokenResultProto);
+}
+
+message TransactionRequestProto {
+  string transactionToken = 1;
+  int64 fromAccountId = 2;
+  string fromAccountType = 3;
+  int64 fromUserId = 4;
+  int64 fromCurrencyCode = 5;
+  DecimalProto fromAmount = 6;
+  int64 toAccountId = 7;
+  string toAccountType = 8;
+  int64 toUserId = 9;
+  int64 toCurrencyCode = 10;
+  DecimalProto toAmount = 11;
+}
+
+message TransactionTokenRequestProto {
+  string transactionToken = 1;
+}
+
+message TransactionTokenResultProto {
+  repeated string messages = 1;
+  bool success = 2;
+  optional string data = 3;
+}
+
+message DecimalProto {
+  sint32 v1 = 1;
+  sint32 v2 = 2;
+  sint32 v3 = 3;
+  sint32 v4 = 4;
+}
