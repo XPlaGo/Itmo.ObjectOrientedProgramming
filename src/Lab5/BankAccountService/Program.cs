@@ -26,7 +26,7 @@ builder.Services.AddPersistenceLayer(configuration =>
     configuration.SslMode = "Prefer";
 });
 
-builder.Services.ConfigureJwt(builder.Configuration, builder.Environment);
+builder.Services.AddPresentationLevel(builder.Configuration, builder.Environment);
 
 WebApplication app = builder.Build();
 

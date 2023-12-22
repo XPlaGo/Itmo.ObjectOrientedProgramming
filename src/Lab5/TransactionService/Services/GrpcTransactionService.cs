@@ -16,7 +16,11 @@ public class GrpcTransactionService : TransactionServiceProto.TransactionService
     private readonly UpdateTransactionCommandHandler _updateTransaction;
     private readonly IMapper _mapper;
 
-    public GrpcTransactionService(CreateTransactionCommandHandler createTransaction, DeleteTransactionCommandHandler deleteTransaction, UpdateTransactionCommandHandler updateTransaction, IMapper mapper)
+    public GrpcTransactionService(
+        CreateTransactionCommandHandler createTransaction,
+        DeleteTransactionCommandHandler deleteTransaction,
+        UpdateTransactionCommandHandler updateTransaction,
+        IMapper mapper)
     {
         _createTransaction = createTransaction;
         _deleteTransaction = deleteTransaction;
@@ -43,16 +47,20 @@ public class GrpcTransactionService : TransactionServiceProto.TransactionService
     }
 
     [Authorize(Roles = "Admin,Internal")]
-    public override Task<TransactionTokenResultProto> Update(TransactionRequestProto request, ServerCallContext context)
+    public override async Task<TransactionTokenResultProto> Update(TransactionRequestProto request, ServerCallContext context)
     {
-        return base.Update(request, context);
+        UpdateTransactionCommand command = _mapper.Map<TransactionRequestProto, UpdateTransactionCommand>(request);
+        Result<string> result = await _updateTransaction.Handle(command, default).ConfigureAwait(false);
+        Console.WriteLine("AAAAAAAAAAAA " + result);
+
+        return TokenResultMap(result);
     }
 
     private static TransactionTokenResultProto TokenResultMap(Result<string> result)
     {
         var resultProto = new TransactionTokenResultProto
         {
-            Success = result.Succeeded,
+            Succeeded = result.Succeeded,
             Data = result.Data,
         };
 

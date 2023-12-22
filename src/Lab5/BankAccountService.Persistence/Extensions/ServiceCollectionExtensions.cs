@@ -42,11 +42,9 @@ public static class ServiceCollectionExtensions
         services
             .AddTransient<IEntityReader<CardAccount>, CardAccountReader>()
             .AddTransient<IEntityReader<SavingsAccount>, SavingsAccountReader>()
-            .AddTransient<IEntityReader<DepositAccount>, DepositAccountReader>()
             .AddTransient<IEntityReader<long>, IdReader>()
             .AddScoped(typeof(IUnitOfWorkWithRepositories), typeof(UnitOfWorkWithRepositories))
             .AddScoped<ICardAccountRepository, CardAccountRepository>()
-            .AddScoped<ISavingsAccountRepository, SavingsAccountRepository>()
-            .AddScoped<IDepositAccountRepository, DepositAccountRepository>();
+            .AddScoped<ISavingsAccountRepository, SavingsAccountRepository>();
     }
 }

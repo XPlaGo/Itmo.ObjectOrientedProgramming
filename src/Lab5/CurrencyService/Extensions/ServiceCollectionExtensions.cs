@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using CurrencyService.Config;
+using CurrencyService.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -6,7 +8,18 @@ namespace CurrencyService.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    public static void AddPresentationLevel(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    {
+        services.AddMapping();
+        services.ConfigureJwt(configuration, environment);
+    }
+
+    private static void AddMapping(this IServiceCollection services)
+    {
+        services.AddAutoMapper(typeof(ConversionMapperProfile));
+    }
+
+    private static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(environment);

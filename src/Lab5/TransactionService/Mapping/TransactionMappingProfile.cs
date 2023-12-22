@@ -11,20 +11,10 @@ public class TransactionMappingProfile : Profile
 {
     public TransactionMappingProfile()
     {
-        CreateMap<TransactionRequestProto, CreateTransactionCommand>()
-            .ForMember(
-                dest => dest.FromAmount,
-                opt => opt.MapFrom(src => src.FromAmount.ConvertToDecimal()))
-            .ForMember(
-                dest => dest.ToAmount,
-                opt => opt.MapFrom(src => src.ToAmount.ConvertToDecimal()));
-        CreateMap<TransactionRequestProto, UpdateTransactionCommand>()
-            .ForMember(
-                dest => dest.FromAmount,
-                opt => opt.MapFrom(src => src.FromAmount.ConvertToDecimal()))
-            .ForMember(
-                dest => dest.ToAmount,
-                opt => opt.MapFrom(src => src.ToAmount.ConvertToDecimal()));
+        CreateMap<DecimalProto, decimal>().ConvertUsing(decimalProto => decimalProto.ConvertToDecimal());
+        CreateMap<decimal, DecimalProto>().ConvertUsing(systemDecimal => systemDecimal.ConvertToDecimalProto());
+        CreateMap<TransactionRequestProto, CreateTransactionCommand>();
+        CreateMap<TransactionRequestProto, UpdateTransactionCommand>();
         CreateMap<TransactionTokenRequestProto, DeleteTransactionCommand>();
     }
 }

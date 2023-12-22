@@ -1,113 +1,67 @@
-﻿using System.Data;
-using BankAccountService.Application.Exceptions;
+﻿using BankAccountService.Application.Exceptions;
 using BankAccountService.Application.Interfaces.Factories;
 using BankAccountService.Application.Interfaces.Repositories;
 using BankAccountService.Application.Interfaces.Services;
 using BankAccountService.Application.Models.CurrencyConversion;
-using BankAccountService.Common;
-using BankAccountService.Common.Factories;
+using BankAccountService.Application.Models.Transfer;
 using BankAccountService.Domain.Entities;
 
 namespace BankAccountService.Application.Features.Transfers.Commands.Transfer.SavingsToCardTransfer;
 
-public class SavingsToCardTransferCommandHandler : IRequestHandler<TransferCommand, Result<TransferResponse>>
+public class SavingsToCardTransferCommandHandler : TransferCommandHandler<SavingsAccount, CardAccount>
 {
-    private readonly IUnitOfWorkWithRepositoriesFactory _unitOfWorkWithRepositoriesFactory;
-    private readonly ICurrencyConversionService _conversionService;
-
     public SavingsToCardTransferCommandHandler(
         IUnitOfWorkWithRepositoriesFactory unitOfWorkWithRepositoriesFactory,
-        ICurrencyConversionService conversionService)
-    {
-        _unitOfWorkWithRepositoriesFactory = unitOfWorkWithRepositoriesFactory;
-        _conversionService = conversionService;
-    }
+        ICurrencyConversionService conversionService,
+        ITransactionService transactionService)
+        : base(unitOfWorkWithRepositoriesFactory, conversionService, transactionService) { }
 
-    public async Task<Result<TransferResponse>> Handle(TransferCommand request, CancellationToken cancellationToken)
+    protected override async Task<AccountsContext<SavingsAccount, CardAccount>> GetAccounts(
+        IUnitOfWorkWithRepositories unitOfWork,
+        TransferCommand request)
     {
+        ArgumentNullException.ThrowIfNull(unitOfWork);
         ArgumentNullException.ThrowIfNull(request);
 
-        if (request.Amount <= 0)
-        {
-            return await new ResultFactory()
-                .FailureAsync<TransferResponse>("Amount must have positive value")
-                .ConfigureAwait(false);
-        }
-
-        using IUnitOfWorkWithRepositories unitOfWork = await _unitOfWorkWithRepositoriesFactory
-            .Create(IsolationLevel.Serializable, cancellationToken)
-            .ConfigureAwait(false);
-
-        try
-        {
-            SavingsAccount fromAccount = await unitOfWork
-                                          .SavingsAccountRepository
-                                          .GetByIdAndUserIdAsync(
-                                              request.FromAccountId,
-                                              request.FromUserId)
-                                          .ConfigureAwait(false) ??
-                                      throw new AccountNotFoundException(
-                                          "CardAccount",
+        SavingsAccount fromAccount = await unitOfWork
+                                      .SavingsAccountRepository
+                                      .GetByIdAndUserIdAsync(
                                           request.FromAccountId,
-                                          request.FromUserId);
+                                          request.FromUserId)
+                                      .ConfigureAwait(false) ??
+                                  throw new AccountNotFoundException(
+                                      nameof(CardAccount),
+                                      request.FromAccountId);
 
-            CardAccount toAccount = await unitOfWork
-                                        .CardAccountRepository
-                                        .GetByIdAndUserIdAsync(
-                                            request.ToAccountId,
-                                            request.ToUserId)
-                                        .ConfigureAwait(false) ??
-                                    throw new AccountNotFoundException(
-                                        "DepositAccount",
-                                        request.ToAccountId,
-                                        request.ToUserId);
+        CardAccount toAccount = await unitOfWork
+                                    .CardAccountRepository
+                                    .GetByIdAsync(
+                                        request.ToAccountId)
+                                    .ConfigureAwait(false) ??
+                                throw new AccountNotFoundException(
+                                    nameof(SavingsAccount),
+                                    request.ToAccountId);
 
-            Result<CurrencyConversionResponse> amountsResult = await _conversionService.Convert(
-                    new CurrencyConversionRequest(
-                        fromAccount.CurrencyCode,
-                        toAccount.CurrencyCode,
-                        request.Amount))
-                .ConfigureAwait(false);
+        return new AccountsContext<SavingsAccount, CardAccount>(fromAccount, toAccount);
+    }
 
-            if (amountsResult.Data is null)
-            {
-                return await new ResultFactory()
-                    .FailureAsync<TransferResponse>(amountsResult.Messages)
-                    .ConfigureAwait(false);
-            }
+    protected override async Task Transfer(
+        IUnitOfWorkWithRepositories unitOfWork,
+        AccountsContext<SavingsAccount, CardAccount> accounts,
+        CurrencyConversionResponse amounts)
+    {
+        ArgumentNullException.ThrowIfNull(unitOfWork);
+        ArgumentNullException.ThrowIfNull(accounts);
+        ArgumentNullException.ThrowIfNull(amounts);
 
-            if (fromAccount.Amount < amountsResult.Data.FromAmount) throw new NotEnoughMoneyException();
+        if (accounts.FromAccount.Amount < amounts.FromAmount) throw new NotEnoughMoneyException();
 
-            fromAccount.Amount -= amountsResult.Data.FromAmount;
-            fromAccount.UpdatedDate = DateTime.UtcNow;
+        accounts.FromAccount.Amount -= amounts.FromAmount;
+        accounts.FromAccount.UpdatedDate = DateTime.UtcNow;
+        accounts.ToAccount.Amount += amounts.ToAmount;
+        accounts.ToAccount.UpdatedDate = DateTime.UtcNow;
 
-            toAccount.Amount += amountsResult.Data.ToAmount;
-            toAccount.UpdatedDate = DateTime.UtcNow;
-
-            await unitOfWork.SavingsAccountRepository.UpdateAsync(fromAccount).ConfigureAwait(false);
-            await unitOfWork.CardAccountRepository.UpdateAsync(toAccount).ConfigureAwait(false);
-
-            await unitOfWork.CommitAsync(IsolationLevel.Serializable, cancellationToken).ConfigureAwait(false);
-
-            return await new ResultFactory()
-                .SuccessAsync(new TransferResponse(
-                    amountsResult.Data.FromAmount,
-                    amountsResult.Data.ToAmount))
-                .ConfigureAwait(false);
-        }
-        catch (AccountNotFoundException exception)
-        {
-            await unitOfWork.RollbackAsync(cancellationToken).ConfigureAwait(false);
-            return await new ResultFactory()
-                .FailureAsync<TransferResponse>(exception.Message)
-                .ConfigureAwait(false);
-        }
-        catch (NotEnoughMoneyException exception)
-        {
-            await unitOfWork.RollbackAsync(cancellationToken).ConfigureAwait(false);
-            return await new ResultFactory()
-                .FailureAsync<TransferResponse>(exception.Message)
-                .ConfigureAwait(false);
-        }
+        await unitOfWork.SavingsAccountRepository.UpdateAsync(accounts.FromAccount).ConfigureAwait(false);
+        await unitOfWork.CardAccountRepository.UpdateAsync(accounts.ToAccount).ConfigureAwait(false);
     }
 }

@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
     private static void AddMapping(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(TransactionMappingProfile));
+        services.AddAutoMapper(typeof(CurrencyMappingProfile));
     }
 
     private static void AddServices(this IServiceCollection services, IConfiguration configuration, GrpcServicesSettings settings)

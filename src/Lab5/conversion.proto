@@ -16,7 +16,7 @@ message ConversionRequestProto {
 
 message ConversionResultProto {
   repeated string messages = 1;
-  bool success = 2;
+  bool succeeded = 2;
   optional ConversionResponseProto data = 3;
 }
 

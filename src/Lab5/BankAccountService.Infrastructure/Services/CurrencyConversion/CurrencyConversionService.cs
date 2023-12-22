@@ -1,8 +1,8 @@
-﻿using BankAccountService.Application.Interfaces.Services;
+﻿using AutoMapper;
+using BankAccountService.Application.Interfaces.Services;
 using BankAccountService.Application.Models.CurrencyConversion;
 using BankAccountService.Common;
 using BankAccountService.Common.Factories;
-using BankAccountService.Infrastructure.Extensions;
 using BankAccountService.Infrastructure.Services.JWT;
 using CurrencyConversion;
 using Grpc.Core;
@@ -14,11 +14,13 @@ public class CurrencyConversionService : ICurrencyConversionService
 {
     private readonly GrpcServicesSettings _settings;
     private readonly IAuthTokenService _tokenService;
+    private readonly IMapper _mapper;
 
-    public CurrencyConversionService(GrpcServicesSettings settings, IAuthTokenService tokenService)
+    public CurrencyConversionService(GrpcServicesSettings settings, IAuthTokenService tokenService, IMapper mapper)
     {
         _settings = settings;
         _tokenService = tokenService;
+        _mapper = mapper;
     }
 
     public async Task<Result<CurrencyConversionResponse>> Convert(CurrencyConversionRequest request)
@@ -33,28 +35,27 @@ public class CurrencyConversionService : ICurrencyConversionService
             using var channel = GrpcChannel.ForAddress(_settings.CurrencyServiceAddress);
             var client = new ConversionServiceProto.ConversionServiceProtoClient(channel);
 
-            var conversionRequest = new ConversionRequestProto
-            {
-                FromCurrencyCode = request.FromCurrencyCode,
-                ToCurrencyCode = request.ToCurrencyCode,
-                Amount = request.Amount.ConvertToCurrencyDecimalProto(),
-            };
+            ConversionRequestProto conversionRequest =
+                _mapper.Map<CurrencyConversionRequest, ConversionRequestProto>(request);
 
             var headers = new Metadata { { "Authorization", $"Bearer {jwtToken}" } };
 
-            ConversionResultProto response =
+            ConversionResultProto result =
                 await client.ConvertAsync(conversionRequest, headers).ConfigureAwait(false);
 
-            CurrencyConversionResponse? data = response.Data?.FromAmount is null || response.Data?.ToAmount is null
-                ? null
-                : new CurrencyConversionResponse(
-                    response.Data.FromAmount.ConvertToDecimal(),
-                    response.Data.ToAmount.ConvertToDecimal());
+            if (result.Succeeded is false)
+            {
+                return await new ResultFactory()
+                    .FailureAsync<CurrencyConversionResponse>(result.Messages.ToList())
+                    .ConfigureAwait(false);
+            }
 
-            return new Result<CurrencyConversionResponse>(
-                response.Messages.ToList(),
-                response.Success,
-                data);
+            CurrencyConversionResponse data =
+                _mapper.Map<ConversionResponseProto, CurrencyConversionResponse>(result.Data);
+
+            return await new ResultFactory()
+                .SuccessAsync(data)
+                .ConfigureAwait(false);
         }
         catch (RpcException exception)
         {

@@ -2,6 +2,8 @@
 
 option csharp_namespace = "Transaction";
 
+import "google/protobuf/wrappers.proto";
+
 package transaction;
 
 service TransactionServiceProto {
@@ -30,8 +32,8 @@ message TransactionTokenRequestProto {
 
 message TransactionTokenResultProto {
   repeated string messages = 1;
-  bool success = 2;
-  optional string data = 3;
+  bool succeeded = 2;
+  google.protobuf.StringValue data = 3;
 }
 
 message DecimalProto {

@@ -7,6 +7,7 @@ using TransactionService.Application.Features.Transactions.Commands.DeleteTransa
 using TransactionService.Application.Features.Transactions.Commands.UpdateTransaction;
 using TransactionService.Application.Features.Transactions.Queries.GetAllByUserId;
 using TransactionService.Common;
+using TransactionService.Common.Factories;
 
 namespace TransactionService.Controllers;
 
@@ -74,29 +75,37 @@ public class TransactionController : ControllerBase
     [Authorize(Roles = "User,Admin")]
     public async Task<ActionResult<Result<IReadOnlyList<GetAllByUserIdResponse>>>> GetAllByUserTransaction()
     {
+        Result<long> userIdResult = await GetUserId().ConfigureAwait(false);
+        if (userIdResult.Succeeded is false)
+            return Unauthorized(await new ResultFactory().FailureAsync<GetAllByUserIdResponse>(userIdResult.Messages).ConfigureAwait(false));
+
+        Result<IReadOnlyList<GetAllByUserIdResponse>> result = await _getAllByUserId
+            .Handle(new GetAllByUserIdRequest(userIdResult.Data), default)
+            .ConfigureAwait(false);
+
+        if (result.Succeeded is false) return BadRequest(result);
+
+        return result;
+    }
+
+    private async Task<Result<long>> GetUserId()
+    {
         var ci = new CultureInfo("us-Us");
         string? idString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (idString is null) return Unauthorized("Token don't contain NameIdentifier");
-
+        if (idString is null)
+            return await new ResultFactory().FailureAsync<long>("Token don't contain NameIdentifier").ConfigureAwait(false);
         try
         {
             long userId = long.Parse(idString, ci);
-
-            Result<IReadOnlyList<GetAllByUserIdResponse>> result = await _getAllByUserId
-                .Handle(new GetAllByUserIdRequest(userId), default)
-                .ConfigureAwait(false);
-
-            if (result.Succeeded is false) return BadRequest(result);
-
-            return result;
+            return await new ResultFactory().SuccessAsync(userId).ConfigureAwait(false);
         }
         catch (FormatException)
         {
-            return Unauthorized("Invalid NameIdentifier format");
+            return await new ResultFactory().FailureAsync<long>("Invalid NameIdentifier format").ConfigureAwait(false);
         }
         catch (OverflowException)
         {
-            return Unauthorized("NameIdentifier is too long");
+            return await new ResultFactory().FailureAsync<long>("NameIdentifier is too long").ConfigureAwait(false);
         }
     }
 }

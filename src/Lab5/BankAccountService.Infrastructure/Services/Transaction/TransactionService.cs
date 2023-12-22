@@ -44,7 +44,7 @@ public class TransactionService : ITransactionService
             return new Result<string>
             {
                 Messages = response.Messages.ToList(),
-                Succeeded = response.Success,
+                Succeeded = response.Succeeded,
                 Data = response.Data,
             };
         }
@@ -77,7 +77,7 @@ public class TransactionService : ITransactionService
             return new Result<string>
             {
                 Messages = response.Messages.ToList(),
-                Succeeded = response.Success,
+                Succeeded = response.Succeeded,
                 Data = response.Data,
             };
         }
@@ -110,7 +110,7 @@ public class TransactionService : ITransactionService
             return new Result<string>
             {
                 Messages = response.Messages.ToList(),
-                Succeeded = response.Success,
+                Succeeded = response.Succeeded,
                 Data = response.Data,
             };
         }

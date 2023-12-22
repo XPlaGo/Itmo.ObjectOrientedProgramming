@@ -1,4 +1,4 @@
-﻿namespace CurrencyService;
+﻿namespace CurrencyService.Config;
 
 public class AccessTokenSettings
 {

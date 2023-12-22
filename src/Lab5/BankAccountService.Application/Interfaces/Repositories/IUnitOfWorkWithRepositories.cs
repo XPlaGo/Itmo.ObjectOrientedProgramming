@@ -6,7 +6,6 @@ public interface IUnitOfWorkWithRepositories : IDisposable
 {
     ICardAccountRepository CardAccountRepository { get; }
     ISavingsAccountRepository SavingsAccountRepository { get; }
-    IDepositAccountRepository DepositAccountRepository { get; }
 
     ValueTask CommitAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken);
 

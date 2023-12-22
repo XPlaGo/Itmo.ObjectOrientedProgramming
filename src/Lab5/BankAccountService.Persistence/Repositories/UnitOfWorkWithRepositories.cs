@@ -12,18 +12,15 @@ public class UnitOfWorkWithRepositories : IUnitOfWorkWithRepositories
     public UnitOfWorkWithRepositories(
         ApplicationDbContext dbContext,
         ICardAccountRepository cardAccountRepository,
-        ISavingsAccountRepository savingsAccountRepository,
-        IDepositAccountRepository depositAccountRepository)
+        ISavingsAccountRepository savingsAccountRepository)
     {
         _dbContext = dbContext;
         CardAccountRepository = cardAccountRepository;
         SavingsAccountRepository = savingsAccountRepository;
-        DepositAccountRepository = depositAccountRepository;
     }
 
     public ICardAccountRepository CardAccountRepository { get; }
     public ISavingsAccountRepository SavingsAccountRepository { get; }
-    public IDepositAccountRepository DepositAccountRepository { get; }
 
     public async ValueTask CommitAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
     {

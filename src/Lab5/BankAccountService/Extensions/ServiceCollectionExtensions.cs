@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BankAccountService.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -6,7 +7,18 @@ namespace BankAccountService.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    public static void AddPresentationLevel(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    {
+        services.AddMapping();
+        services.ConfigureJwt(configuration, environment);
+    }
+
+    private static void AddMapping(this IServiceCollection services)
+    {
+        services.AddAutoMapper(typeof(TransferMappingProfile));
+    }
+
+    private static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(environment);

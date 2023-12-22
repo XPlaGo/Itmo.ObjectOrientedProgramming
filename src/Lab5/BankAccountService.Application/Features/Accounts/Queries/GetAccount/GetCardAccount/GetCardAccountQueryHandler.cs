@@ -5,7 +5,7 @@ using BankAccountService.Domain.Entities;
 
 namespace BankAccountService.Application.Features.Accounts.Queries.GetAccount.GetCardAccount;
 
-public class GetCardAccountQueryHandler : IChainRequestHandler<GetAccountRequest, Result<GetAccountResponse>>
+public class GetCardAccountQueryHandler : IRequestHandler<GetAccountRequest, Result<GetAccountResponse>>
 {
     private readonly ICardAccountRepository _repository;
 

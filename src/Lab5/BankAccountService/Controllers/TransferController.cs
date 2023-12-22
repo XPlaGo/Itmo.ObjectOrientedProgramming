@@ -1,10 +1,13 @@
+using System.Globalization;
+using System.Security.Claims;
+using AutoMapper;
 using BankAccountService.Application.Features.Transfers.Commands.Transfer;
 using BankAccountService.Application.Features.Transfers.Commands.Transfer.CardToCardTransfer;
-using BankAccountService.Application.Features.Transfers.Commands.Transfer.CardToDepositTranfer;
 using BankAccountService.Application.Features.Transfers.Commands.Transfer.CardToSavingsTransfer;
-using BankAccountService.Application.Features.Transfers.Commands.Transfer.DepositToCardTransfer;
 using BankAccountService.Application.Features.Transfers.Commands.Transfer.SavingsToCardTransfer;
 using BankAccountService.Common;
+using BankAccountService.Common.Factories;
+using BankAccountService.Models.Requests.Transfer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,66 +19,98 @@ public class TransferController : ControllerBase
 {
     private readonly CardToCardTransferCommandHandler _cardToCardTransfer;
     private readonly CardToSavingsTransferCommandHandler _cardToSavingsTransfer;
-    private readonly CardToDepositTransferCommandHandler _cardToDepositTransfer;
-    private readonly DepositToCardTransferCommandHandler _depositToCardTransfer;
     private readonly SavingsToCardTransferCommandHandler _savingsToCardTransfer;
+    private readonly IMapper _mapper;
 
-    public TransferController(CardToCardTransferCommandHandler cardToCardTransfer, CardToSavingsTransferCommandHandler cardToSavingsTransfer, CardToDepositTransferCommandHandler cardToDepositTransfer, DepositToCardTransferCommandHandler depositToCardTransfer, SavingsToCardTransferCommandHandler savingsToCardTransfer)
+    public TransferController(CardToCardTransferCommandHandler cardToCardTransfer, CardToSavingsTransferCommandHandler cardToSavingsTransfer, SavingsToCardTransferCommandHandler savingsToCardTransfer, IMapper mapper)
     {
         _cardToCardTransfer = cardToCardTransfer;
         _cardToSavingsTransfer = cardToSavingsTransfer;
-        _cardToDepositTransfer = cardToDepositTransfer;
-        _depositToCardTransfer = depositToCardTransfer;
         _savingsToCardTransfer = savingsToCardTransfer;
+        _mapper = mapper;
     }
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("cardToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToCard([FromBody] TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToCard([FromBody] TransferRequest request)
     {
-        Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(request);
+
+        Result<long> userIdResult = await GetUserId().ConfigureAwait(false);
+        if (userIdResult.Succeeded is false)
+            return Unauthorized(await new ResultFactory().FailureAsync<TransferResponse>(userIdResult.Messages).ConfigureAwait(false));
+
+        TransferCommand command = _mapper.Map<TransferRequest, TransferCommand>(
+            request,
+            opt => opt.AfterMap((src, dest) => dest.FromUserId = userIdResult.Data));
+        Result<TransferResponse> result = await _cardToCardTransfer.Handle(command, default).ConfigureAwait(false);
+
         if (result.Succeeded is false) return BadRequest(result);
+
         return result;
     }
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("cardToSaving")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToSaving([FromBody] TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToSaving([FromBody] TransferRequest request)
     {
-        Result<TransferResponse> result = await _cardToSavingsTransfer.Handle(request, default).ConfigureAwait(false);
-        if (result.Succeeded is false) return BadRequest(result);
-        return result;
-    }
+        ArgumentNullException.ThrowIfNull(request);
 
-    [Authorize(Roles = "User,Admin")]
-    [HttpPost]
-    [Route("cardToDeposit")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferCardToDeposit([FromBody] TransferCommand request)
-    {
-        Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
-        if (result.Succeeded is false) return BadRequest(result);
-        return result;
-    }
+        Result<long> userIdResult = await GetUserId().ConfigureAwait(false);
+        if (userIdResult.Succeeded is false)
+            return Unauthorized(await new ResultFactory().FailureAsync<TransferResponse>(userIdResult.Messages).ConfigureAwait(false));
 
-    [Authorize(Roles = "User,Admin")]
-    [HttpPost]
-    [Route("depositToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferDepositToCard([FromBody] TransferCommand request)
-    {
-        Result<TransferResponse> result = await _depositToCardTransfer.Handle(request, default).ConfigureAwait(false);
+        TransferCommand command = _mapper.Map<TransferRequest, TransferCommand>(
+            request,
+            opt => opt.AfterMap((src, dest) => dest.FromUserId = userIdResult.Data));
+        Result<TransferResponse> result = await _cardToSavingsTransfer.Handle(command, default).ConfigureAwait(false);
+
         if (result.Succeeded is false) return BadRequest(result);
+
         return result;
     }
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     [Route("savingsToCard")]
-    public async Task<ActionResult<Result<TransferResponse>>> TransferSavingsToCard([FromBody] TransferCommand request)
+    public async Task<ActionResult<Result<TransferResponse>>> TransferSavingsToCard([FromBody] TransferRequest request)
     {
-        Result<TransferResponse> result = await _cardToCardTransfer.Handle(request, default).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(request);
+
+        Result<long> userIdResult = await GetUserId().ConfigureAwait(false);
+        if (userIdResult.Succeeded is false)
+            return Unauthorized(await new ResultFactory().FailureAsync<TransferResponse>(userIdResult.Messages).ConfigureAwait(false));
+
+        TransferCommand command = _mapper.Map<TransferRequest, TransferCommand>(
+            request,
+            opt => opt.AfterMap((src, dest) => dest.FromUserId = userIdResult.Data));
+        Result<TransferResponse> result = await _savingsToCardTransfer.Handle(command, default).ConfigureAwait(false);
+
         if (result.Succeeded is false) return BadRequest(result);
+
         return result;
+    }
+
+    private async Task<Result<long>> GetUserId()
+    {
+        var ci = new CultureInfo("us-Us");
+        string? idString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (idString is null)
+            return await new ResultFactory().FailureAsync<long>("Token don't contain NameIdentifier").ConfigureAwait(false);
+        try
+        {
+            long userId = long.Parse(idString, ci);
+            return await new ResultFactory().SuccessAsync(userId).ConfigureAwait(false);
+        }
+        catch (FormatException)
+        {
+            return await new ResultFactory().FailureAsync<long>("Invalid NameIdentifier format").ConfigureAwait(false);
+        }
+        catch (OverflowException)
+        {
+            return await new ResultFactory().FailureAsync<long>("NameIdentifier is too long").ConfigureAwait(false);
+        }
     }
 }

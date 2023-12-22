@@ -1,3 +1,5 @@
 ﻿namespace BankAccountService.Application.Models.CurrencyConversion;
 
-public record CurrencyConversionResponse(decimal FromAmount, decimal ToAmount);
+public record CurrencyConversionResponse(
+    decimal FromAmount,
+    decimal ToAmount);

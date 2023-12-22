@@ -5,7 +5,7 @@ using BankAccountService.Domain.Entities;
 
 namespace BankAccountService.Application.Features.Accounts.Queries.GetAccount.GetSavingsAccount;
 
-public class GetSavingsAccountQueryHandler : IChainRequestHandler<GetAccountRequest, Result<GetAccountResponse>>
+public class GetSavingsAccountQueryHandler : IRequestHandler<GetAccountRequest, Result<GetAccountResponse>>
 {
     private readonly ISavingsAccountRepository _repository;
 

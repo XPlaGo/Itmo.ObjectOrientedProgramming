@@ -11,18 +11,15 @@ public class UnitOfWorkWithRepositoriesFactory : IUnitOfWorkWithRepositoriesFact
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly ICardAccountRepository _cardAccountRepository;
     private readonly ISavingsAccountRepository _savingsAccountRepository;
-    private readonly IDepositAccountRepository _depositAccountRepository;
 
     public UnitOfWorkWithRepositoriesFactory(
         ApplicationDbContext applicationDbContext,
         ICardAccountRepository cardAccountRepository,
-        ISavingsAccountRepository savingsAccountRepository,
-        IDepositAccountRepository depositAccountRepository)
+        ISavingsAccountRepository savingsAccountRepository)
     {
         _applicationDbContext = applicationDbContext;
         _cardAccountRepository = cardAccountRepository;
         _savingsAccountRepository = savingsAccountRepository;
-        _depositAccountRepository = depositAccountRepository;
     }
 
     public async Task<IUnitOfWorkWithRepositories> Create(IsolationLevel isolationLevel, CancellationToken cancellationToken)
@@ -30,8 +27,7 @@ public class UnitOfWorkWithRepositoriesFactory : IUnitOfWorkWithRepositoriesFact
         var unitOfWork = new UnitOfWorkWithRepositories(
             _applicationDbContext,
             _cardAccountRepository,
-            _savingsAccountRepository,
-            _depositAccountRepository);
+            _savingsAccountRepository);
         await unitOfWork.ConnectAndBeginTransaction(isolationLevel, cancellationToken).ConfigureAwait(false);
         return unitOfWork;
     }
