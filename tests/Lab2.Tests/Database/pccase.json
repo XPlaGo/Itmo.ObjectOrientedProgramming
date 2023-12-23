@@ -1,0 +1,14 @@
+﻿[
+  {
+    "Id": {"Id": "11223"},
+    "MaxVideoCardHeight": 160,
+    "MaxVideoCardWidth": 320,
+    "SupportedMotherboardFormFactors": ["ATX", "MicroATX"]
+  },
+  {
+    "Id": {"Id": "11221"},
+    "MaxVideoCardHeight": 180,
+    "MaxVideoCardWidth": 350,
+    "SupportedMotherboardFormFactors": ["ATX", "MicroATX", "Mini-ITX"]
+  }
+]

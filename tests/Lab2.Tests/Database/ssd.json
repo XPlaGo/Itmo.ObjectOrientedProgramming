@@ -1,0 +1,16 @@
+﻿[
+  {
+    "Id": {"Id": "99000"},
+    "ConnectionType": "SATA",
+    "Volume": 512,
+    "MaxWorkSpeed": 560,
+    "PowerConsumption": 3.5
+  },
+  {
+    "Id": {"Id": "99001"},
+    "ConnectionType": "NVMe",
+    "Volume": 1024,
+    "MaxWorkSpeed": 7000,
+    "PowerConsumption": 5.5
+  }
+]

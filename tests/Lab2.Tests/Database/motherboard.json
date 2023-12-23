@@ -1,0 +1,26 @@
+﻿[
+  {
+    "Id": {"Id": "13579"},
+    "Socket": "AM4",
+    "PcieCount": 3,
+    "SataCount": 6,
+    "SupportedMemoryVersions": ["DDR4"],
+    "XmpSupport": true,
+    "DdrStandard": "DDR4",
+    "RamSlotsCount": 4,
+    "FormFactor": "ATX",
+    "Bios": {"Id": {"Id": "12345"}}
+  },
+  {
+    "Id": {"Id": "24680"},
+    "Socket": "LGA1700",
+    "PcieCount": 4,
+    "SataCount": 8,
+    "SupportedMemoryVersions": ["DDR5"],
+    "XmpSupport": true,
+    "DdrStandard": "DDR5",
+    "RamSlotsCount": 8,
+    "FormFactor": "ATX",
+    "Bios": {"Id": {"Id": "12346"}}
+  }
+]

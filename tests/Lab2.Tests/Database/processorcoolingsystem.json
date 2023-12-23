@@ -1,0 +1,16 @@
+﻿[
+  {
+    "Id": {"Id": "55667"},
+    "Height": 160,
+    "Width": 160,
+    "SupportedSockets": ["LGA1200", "AM4", "LGA1700"],
+    "Tdp": 95
+  },
+  {
+    "Id": {"Id": "55668"},
+    "Height": 180,
+    "Width": 180,
+    "SupportedSockets": ["LGA1700"],
+    "Tdp": 120
+  }
+]

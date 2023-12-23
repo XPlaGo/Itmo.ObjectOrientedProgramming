@@ -1,0 +1,16 @@
+﻿[
+  {
+    "Id": {"Id": "33445"},
+    "WifiStandardVersion": "802.11ax",
+    "HasBuiltinBluetoothModule": true,
+    "PcieVersion": "PCIe 3.0",
+    "PowerConsumption": 4.5
+  },
+  {
+    "Id": {"Id": "33446"},
+    "WifiStandardVersion": "802.11ax",
+    "HasBuiltinBluetoothModule": true,
+    "PcieVersion": "PCIe 4.0",
+    "PowerConsumption": 6.0
+  }
+]

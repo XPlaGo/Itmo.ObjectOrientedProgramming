@@ -9,6 +9,12 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Lab2\Lab2.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None 
+            Include="Database\**" 
+            CopyToOutputDirectory="PreserveNewest" 
+            LinkBase="Database\" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
