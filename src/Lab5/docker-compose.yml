@@ -1,0 +1,59 @@
+version: "3.6"
+services:
+    
+  identity-db:
+    image: postgres
+    restart: always
+    
+  currency-db:
+    image: postgres
+    restart: always
+    
+  bank-account-db:
+    image: postgres
+    restart: always
+    
+  transaction-db:
+    image: postgres
+    restart: always
+      
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "test@mail.ru"
+      PGADMIN_DEFAULT_PASSWORD: "test123!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - identity-db
+  
+  identity-service:
+    build:
+      context: .
+      dockerfile: IdentityService/IdentityService/Dockerfile
+    depends_on:
+      - identity-db
+      - currency-service
+    
+  currency-service:
+    build:
+      context: .
+      dockerfile: CurrencyService/Dockerfile
+    depends_on:
+      - currency-db
+        
+  bank-account-service:
+    build:
+      context: .
+      dockerfile: BankAccountService/Dockerfile
+    depends_on:
+      - bank-account-db
+      - currency-service
+      - transaction-service
+        
+  transaction-service:
+    build:
+      context: .
+      dockerfile: TransactionService/Dockerfile
+    depends_on:
+      - transaction-db

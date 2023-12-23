@@ -1,0 +1,82 @@
+version: '3.6'
+  
+services:
+  identity-db:
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=xplago
+      - POSTGRES_PASSWORD=xplago
+      - POSTGRES_DB=lab5
+    ports:
+      - "1001:5432"
+        
+  currency-db:
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=xplago
+      - POSTGRES_PASSWORD=xplago
+      - POSTGRES_DB=lab5
+    ports:
+      - "1002:5432"
+        
+  bank-account-db:
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=xplago
+      - POSTGRES_PASSWORD=xplago
+      - POSTGRES_DB=lab5
+    ports:
+      - "1003:5432"
+      
+  transaction-db:
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=xplago
+      - POSTGRES_PASSWORD=xplago
+      - POSTGRES_DB=lab5
+    ports:
+      - "1004:5432"
+    
+  identity-service:
+    environment:
+      - PGUSER=xplago
+      - PGPASSWORD=xplago
+      - PGHOST=host.docker.internal
+      - PGPORT=1001
+      - PGDBNAME=lab5
+    ports:
+      - "7001:80"
+
+  currency-service:
+    environment:
+      - PGUSER=xplago
+      - PGPASSWORD=xplago
+      - PGHOST=host.docker.internal
+      - PGPORT=1002
+      - PGDBNAME=lab5
+    ports:
+      - "7002:7002"
+      - "8002:8002"
+  
+  bank-account-service:
+    environment:
+      - PGUSER=xplago
+      - PGPASSWORD=xplago
+      - PGHOST=host.docker.internal
+      - PGPORT=1003
+      - PGDBNAME=lab5
+      - GRPC_CURRENCY_ADDRESS=http://host.docker.internal:7002
+      - GRPC_TRANSACTION_ADDRESS=http://host.docker.internal:7004
+    ports:
+      - "7003:80"
+        
+  transaction-service:
+    environment:
+      - PGUSER=xplago
+      - PGPASSWORD=xplago
+      - PGHOST=host.docker.internal
+      - PGPORT=1004
+      - PGDBNAME=lab5
+    ports:
+      - "7004:7004"
+      - "8004:8004"

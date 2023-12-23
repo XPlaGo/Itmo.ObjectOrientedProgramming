@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CurrencyService.Application\CurrencyService.Application.csproj" />
+      <ProjectReference Include="..\CurrencyService.Common\CurrencyService.Common.csproj" />
+      <ProjectReference Include="..\CurrencyService.Domain\CurrencyService.Domain.csproj" />
+      <ProjectReference Include="..\CurrencyService.Infrastructure\CurrencyService.Infrastructure.csproj" />
+      <ProjectReference Include="..\CurrencyService.Persistence\CurrencyService.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+      <PackageReference Include="Grpc.AspNetCore" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="..\conversion.proto" GrpcServices="Server">
+            <Link>Protos\transfer.proto</Link>
+        </Protobuf>
+    </ItemGroup>
+
+</Project>

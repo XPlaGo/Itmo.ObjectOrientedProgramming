@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Grpc.AspNetCore" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BankAccountService.Application\BankAccountService.Application.csproj" />
+      <ProjectReference Include="..\BankAccountService.Common\BankAccountService.Common.csproj" />
+      <ProjectReference Include="..\BankAccountService.Domain\BankAccountService.Domain.csproj" />
+      <ProjectReference Include="..\BankAccountService.Infrastructure\BankAccountService.Infrastructure.csproj" />
+      <ProjectReference Include="..\BankAccountService.Persistence\BankAccountService.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="..\transfer.proto" GrpcServices="Server">
+            <Link>Protos\transfer.proto</Link>
+        </Protobuf>
+    </ItemGroup>
+</Project>
