@@ -6,7 +6,6 @@ using BankAccountService.Persistence.Factories;
 using BankAccountService.Persistence.Mapping;
 using BankAccountService.Persistence.Repositories;
 using CurrencyService.Persistence.Mapping;
-using CurrencyService.Persistence.Repositories;
 using IdentityService.Persistence.Mapping;
 using Itmo.Dev.Platform.Postgres.Connection;
 using Itmo.Dev.Platform.Postgres.Extensions;

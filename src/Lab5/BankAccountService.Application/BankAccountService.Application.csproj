@@ -15,10 +15,4 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Features\Accounts\Queries\Commands\CardAccountCommands\CreateAccount\" />
-      <Folder Include="Features\Accounts\Queries\Commands\CardAccountCommands\TopUpCardAccount\" />
-      <Folder Include="Features\Accounts\Queries\Commands\CardAccountCommands\WithdrawFromCardAccount\" />
-    </ItemGroup>
-
 </Project>

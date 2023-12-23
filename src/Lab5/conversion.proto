@@ -2,10 +2,13 @@
 
 option csharp_namespace = "CurrencyConversion";
 
+import "google/protobuf/wrappers.proto";
+
 package currency_conversion;
 
 service ConversionServiceProto {
   rpc Convert (ConversionRequestProto) returns (ConversionResultProto);
+  rpc CurrencyExists (google.protobuf.Int64Value) returns (CurrencyExistsResultProto); 
 }
 
 message ConversionRequestProto {
@@ -18,6 +21,12 @@ message ConversionResultProto {
   repeated string messages = 1;
   bool succeeded = 2;
   optional ConversionResponseProto data = 3;
+}
+
+message CurrencyExistsResultProto {
+  repeated string messages = 1;
+  bool succeeded = 2;
+  bool data = 3;
 }
 
 message ConversionResponseProto {

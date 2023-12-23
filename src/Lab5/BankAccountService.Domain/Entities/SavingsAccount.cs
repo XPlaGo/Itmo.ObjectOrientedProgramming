@@ -17,4 +17,18 @@ public class SavingsAccount : Account
         UpdatedDate = updatedDate;
         CurrencyCode = currencyCode;
     }
+
+    public SavingsAccount(
+        decimal amount,
+        long userId,
+        long currencyCode,
+        DateTime createdDate,
+        DateTime updatedDate)
+    {
+        Amount = amount;
+        UserId = userId;
+        CreatedDate = createdDate;
+        UpdatedDate = updatedDate;
+        CurrencyCode = currencyCode;
+    }
 }

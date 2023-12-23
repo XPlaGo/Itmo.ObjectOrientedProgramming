@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     private static void AddMapping(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(TransferMappingProfile));
+        services.AddAutoMapper(typeof(AccountsMappingProfile));
     }
 
     private static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)

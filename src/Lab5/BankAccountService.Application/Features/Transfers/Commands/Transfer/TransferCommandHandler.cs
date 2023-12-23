@@ -34,8 +34,6 @@ where TToAccount : Account
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        ValidateRequest(request);
-
         using IUnitOfWorkWithRepositories unitOfWork = await _unitOfWorkWithRepositoriesFactory
             .Create(IsolationLevel.Serializable, cancellationToken)
             .ConfigureAwait(false);
@@ -44,6 +42,8 @@ where TToAccount : Account
 
         try
         {
+            ValidateRequest(request);
+
             AccountsContext<TFromAccount, TToAccount> accounts = await GetAccounts(unitOfWork, request).ConfigureAwait(false);
 
             CurrencyConversionResponse amounts = await Convert(accounts, request).ConfigureAwait(false);
@@ -57,6 +57,13 @@ where TToAccount : Account
                 .SuccessAsync(new TransferResponse(
                     amounts.FromAmount,
                     amounts.ToAmount))
+                .ConfigureAwait(false);
+        }
+        catch (DatabaseException exception)
+        {
+            await RollbackAsync(unitOfWork, transactionToken, cancellationToken).ConfigureAwait(false);
+            return await new ResultFactory()
+                .FailureAsync<TransferResponse>(exception.Message)
                 .ConfigureAwait(false);
         }
         catch (TransferRequestValidationException exception)

@@ -51,7 +51,6 @@ public class GrpcTransactionService : TransactionServiceProto.TransactionService
     {
         UpdateTransactionCommand command = _mapper.Map<TransactionRequestProto, UpdateTransactionCommand>(request);
         Result<string> result = await _updateTransaction.Handle(command, default).ConfigureAwait(false);
-        Console.WriteLine("AAAAAAAAAAAA " + result);
 
         return TokenResultMap(result);
     }

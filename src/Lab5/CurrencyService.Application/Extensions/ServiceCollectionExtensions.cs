@@ -1,4 +1,5 @@
-﻿using CurrencyService.Application.Features.CurrencyExchanges.Conversion;
+﻿using CurrencyService.Application.Features.Currencies.Queries.CurrencyExistsById;
+using CurrencyService.Application.Features.CurrencyExchanges.Conversion;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CurrencyService.Application.Extensions;
@@ -13,5 +14,6 @@ public static class ServiceCollectionExtensions
     private static void AddCommands(this IServiceCollection services)
     {
         services.AddScoped<ConversionCommandHandler>();
+        services.AddScoped<CurrencyExistsByIdHandler>();
     }
 }

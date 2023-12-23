@@ -5,6 +5,7 @@ using BankAccountService.Common;
 using BankAccountService.Common.Factories;
 using BankAccountService.Infrastructure.Services.JWT;
 using CurrencyConversion;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 
@@ -61,6 +62,42 @@ public class CurrencyConversionService : ICurrencyConversionService
         {
             return await new ResultFactory()
                 .FailureAsync<CurrencyConversionResponse>(exception.Message)
+                .ConfigureAwait(false);
+        }
+    }
+
+    public async Task<Result<bool>> CurrencyExists(long currencyCode)
+    {
+        try
+        {
+            string jwtToken =
+                await _tokenService.GenerateInternalAccessToken("BankAccountService").ConfigureAwait(false);
+
+            using var channel = GrpcChannel.ForAddress(_settings.CurrencyServiceAddress);
+            var client = new ConversionServiceProto.ConversionServiceProtoClient(channel);
+
+            var headers = new Metadata { { "Authorization", $"Bearer {jwtToken}" } };
+
+            CurrencyExistsResultProto result =
+                await client
+                    .CurrencyExistsAsync(new Int64Value { Value = currencyCode }, headers)
+                    .ConfigureAwait(false);
+
+            if (result.Succeeded is false)
+            {
+                return await new ResultFactory()
+                    .FailureAsync<bool>(result.Messages.ToList())
+                    .ConfigureAwait(false);
+            }
+
+            return await new ResultFactory()
+                .SuccessAsync(result.Data)
+                .ConfigureAwait(false);
+        }
+        catch (RpcException exception)
+        {
+            return await new ResultFactory()
+                .FailureAsync<bool>(exception.Message)
                 .ConfigureAwait(false);
         }
     }

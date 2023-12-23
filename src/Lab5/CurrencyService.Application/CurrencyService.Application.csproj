@@ -15,4 +15,8 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\Currencies\Commands\" />
+    </ItemGroup>
+
 </Project>

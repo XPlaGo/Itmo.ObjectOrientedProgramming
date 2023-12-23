@@ -35,7 +35,6 @@ public class JwtService : IAuthTokenService
 
         claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(culture)));
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
 
         var jwtHandler = new JwtSecurityTokenHandler();
 

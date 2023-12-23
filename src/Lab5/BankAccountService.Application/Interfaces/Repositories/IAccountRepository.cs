@@ -12,7 +12,7 @@ public interface IAccountRepository<TAccount>
 
     public Task<long> AddAsync(TAccount entity);
 
-    public Task UpdateAsync(TAccount entity);
+    public Task<long> UpdateAsync(TAccount entity);
 
-    public Task DeleteAsync(TAccount entity);
+    public Task<long> DeleteAsync(TAccount entity);
 }
