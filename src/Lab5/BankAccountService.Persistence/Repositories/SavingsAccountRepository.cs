@@ -84,7 +84,8 @@ public class SavingsAccountRepository : ISavingsAccountRepository
 
             using var command = new NpgsqlCommand(
                 "insert into savings_accounts (amount, user_id, currency_code, created_date, updated_date)" +
-                "values (@amount, @user_id, @currency_code, @created_date, @updated_date)",
+                "values (@amount, @user_id, @currency_code, @created_date, @updated_date) " +
+                "returning id",
                 DbContext.Connection,
                 DbContext.Transaction);
             command.Parameters.AddWithValue("amount", entity.Amount);
@@ -92,7 +93,7 @@ public class SavingsAccountRepository : ISavingsAccountRepository
             command.Parameters.AddWithValue("currency_code", entity.CurrencyCode);
             command.Parameters.AddWithValue("created_date", entity.CreatedDate);
             command.Parameters.AddWithValue("updated_date", entity.UpdatedDate);
-            return await ExecuteNonQueryAsync(command).ConfigureAwait(false);
+            return await ExecuteQueryableReaderAsync(command, _idReader).FirstOrDefaultAsync().ConfigureAwait(false);
         }
         catch (NpgsqlException exception)
         {
@@ -108,7 +109,8 @@ public class SavingsAccountRepository : ISavingsAccountRepository
 
             using var command = new NpgsqlCommand(
                 "update savings_accounts set amount = @amount, user_id = @user_id, currency_code = @currency_code, created_date = @created_date, updated_date = @updated_date " +
-                "where id = @id",
+                "where id = @id " +
+                "returning id",
                 DbContext.Connection,
                 DbContext.Transaction);
             command.Parameters.AddWithValue("id", entity.Id);
@@ -133,7 +135,8 @@ public class SavingsAccountRepository : ISavingsAccountRepository
 
             using var command = new NpgsqlCommand(
                 "delete from savings_accounts " +
-                "where id = @id",
+                "where id = @id " +
+                "returning id",
                 DbContext.Connection,
                 DbContext.Transaction);
             command.Parameters.AddWithValue("id", entity.Id);

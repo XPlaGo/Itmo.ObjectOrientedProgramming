@@ -43,7 +43,7 @@ public class TransferController : ControllerWithAuthBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    [Route("cardToCard")]
+    [Route("card/card")]
     public async Task<ActionResult<Result<TransferResponse>>> TransferCardToCard([FromBody] TransferRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -64,7 +64,7 @@ public class TransferController : ControllerWithAuthBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    [Route("cardToSaving")]
+    [Route("card/savings")]
     public async Task<ActionResult<Result<TransferResponse>>> TransferCardToSaving([FromBody] TransferRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -85,7 +85,7 @@ public class TransferController : ControllerWithAuthBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    [Route("savingsToCard")]
+    [Route("savings/card")]
     public async Task<ActionResult<Result<TransferResponse>>> TransferSavingsToCard([FromBody] TransferRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -106,7 +106,7 @@ public class TransferController : ControllerWithAuthBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    [Route("topUpCard")]
+    [Route("card/topup")]
     public async Task<ActionResult<Result<WithCashCardAccountResponse>>> TopUpCard([FromBody] WithCashRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -127,7 +127,7 @@ public class TransferController : ControllerWithAuthBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    [Route("withdrawFromCard")]
+    [Route("card/withdraw")]
     public async Task<ActionResult<Result<WithCashCardAccountResponse>>> WithdrawFromCard([FromBody] WithCashRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);

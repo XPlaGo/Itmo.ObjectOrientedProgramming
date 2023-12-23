@@ -1,4 +1,7 @@
-﻿using BankAccountService.Application.Interfaces.Repositories;
+﻿using System.Data;
+using BankAccountService.Application.Exceptions;
+using BankAccountService.Application.Interfaces.Factories;
+using BankAccountService.Application.Interfaces.Repositories;
 using BankAccountService.Common;
 using BankAccountService.Common.Factories;
 using BankAccountService.Domain.Entities;
@@ -7,39 +10,51 @@ namespace BankAccountService.Application.Features.Accounts.Queries.GetAccount.Ge
 
 public class GetCardAccountQueryHandler : IRequestHandler<GetAccountRequest, Result<GetAccountResponse>>
 {
-    private readonly ICardAccountRepository _repository;
+    private readonly IUnitOfWorkWithRepositoriesFactory _unitOfWorkWithRepositoriesFactory;
 
-    public GetCardAccountQueryHandler(ICardAccountRepository repository)
+    public GetCardAccountQueryHandler(IUnitOfWorkWithRepositoriesFactory unitOfWorkWithRepositoriesFactory)
     {
-        _repository = repository;
+        _unitOfWorkWithRepositoriesFactory = unitOfWorkWithRepositoriesFactory;
     }
-
-    public IRequestHandler<GetAccountRequest, Result<GetAccountResponse>>? Successor { get; set; }
 
     public async Task<Result<GetAccountResponse>> Handle(GetAccountRequest request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-        CardAccount? account = await _repository
-            .GetByIdAndUserIdAsync(request.AccountId, request.UserId)
+
+        using IUnitOfWorkWithRepositories unitOfWork = await _unitOfWorkWithRepositoriesFactory
+            .Create(IsolationLevel.Serializable, cancellationToken)
             .ConfigureAwait(false);
 
-        if (account is null)
+        try
         {
-            if (Successor is null)
-            {
-                return await new ResultFactory()
-                    .FailureAsync<GetAccountResponse>(
-                        $"Accound with id {request.AccountId} for user with id {request.UserId} not found")
-                    .ConfigureAwait(false);
-            }
+            CardAccount account = await unitOfWork
+                .CardAccountRepository
+                .GetByIdAndUserIdAsync(request.AccountId, request.UserId)
+                .ConfigureAwait(false) ?? throw new AccountNotFoundException(nameof(CardAccount), request.AccountId);
 
-            return await Successor.Handle(request, cancellationToken).ConfigureAwait(false);
+            await unitOfWork.CommitAsync(IsolationLevel.Serializable, cancellationToken).ConfigureAwait(false);
+
+            return await new ResultFactory()
+                .SuccessAsync(new GetAccountResponse(
+                    account.Amount,
+                    account.CurrencyCode))
+                .ConfigureAwait(false);
         }
-
-        return await new ResultFactory()
-            .SuccessAsync(new GetAccountResponse(
-                account.Amount,
-                account.CurrencyCode))
-            .ConfigureAwait(false);
+        catch (AccountNotFoundException exception)
+        {
+            await unitOfWork.RollbackAsync(cancellationToken).ConfigureAwait(false);
+            return await new ResultFactory()
+                .FailureAsync<GetAccountResponse>(
+                    exception.Message)
+                .ConfigureAwait(false);
+        }
+        catch (DatabaseException exception)
+        {
+            await unitOfWork.RollbackAsync(cancellationToken).ConfigureAwait(false);
+            return await new ResultFactory()
+                .FailureAsync<GetAccountResponse>(
+                    exception.Message)
+                .ConfigureAwait(false);
+        }
     }
 }
