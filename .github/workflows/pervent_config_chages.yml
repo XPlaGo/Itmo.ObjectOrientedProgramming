@@ -6,7 +6,6 @@ on:
     paths: 
       - 'Directory.Build.props'
       - 'Itmo.ObjectOrientedProgramming.sln.DotSettings'
-      - 'Itmo.ObjectOrientedProgramming.sln'
       - '.github\workflows\dotnet.yml'
       - '.editorconfig'
 
@@ -15,7 +14,6 @@ on:
     paths: 
       - 'Directory.Build.props'
       - 'Itmo.ObjectOrientedProgramming.sln.DotSettings'
-      - 'Itmo.ObjectOrientedProgramming.sln'
       - '.github\workflows\dotnet.yml'
       - '.editorconfig'
 
